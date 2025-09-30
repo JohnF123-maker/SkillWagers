@@ -7,7 +7,6 @@ import {
   TrophyIcon,
   UserIcon,
   ClockIcon,
-  CurrencyDollarIcon,
   MagnifyingGlassIcon,
   FunnelIcon
 } from '@heroicons/react/24/outline';

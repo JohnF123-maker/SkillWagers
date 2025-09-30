@@ -8,12 +8,14 @@ module.exports = {
       colors: {
         primary: {
           50: '#f0f9ff',
+          400: '#60a5fa',
           500: '#3b82f6',
           600: '#2563eb',
           700: '#1d4ed8',
           900: '#1e3a8a',
         },
         secondary: {
+          400: '#a78bfa',
           500: '#8b5cf6',
           600: '#7c3aed',
           700: '#6d28d9',
@@ -22,12 +24,15 @@ module.exports = {
           400: '#fbbf24',
           500: '#f59e0b',
           600: '#d97706',
+          700: '#b45309',
         },
         success: {
+          400: '#34d399',
           500: '#10b981',
           600: '#059669',
         },
         danger: {
+          400: '#f87171',
           500: '#ef4444',
           600: '#dc2626',
         },
@@ -56,5 +61,7 @@ module.exports = {
       }
     },
   },
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar'),
+  ],
 }
