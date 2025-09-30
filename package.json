@@ -12,10 +12,18 @@
     "install-server": "cd server && npm install",
     "install-all": "npm install && npm run install-client && npm run install-server"
   },
-  "keywords": ["gaming", "esports", "marketplace", "escrow"],
+  "keywords": [
+    "gaming",
+    "esports",
+    "marketplace",
+    "escrow"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "firebase": "^12.3.0"
   }
 }

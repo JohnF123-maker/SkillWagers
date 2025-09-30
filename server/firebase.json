@@ -1,15 +1,30 @@
 {
   "functions": {
-    "source": "server",
-    "runtime": "nodejs18"
+    "source": ".",
+    "runtime": "nodejs18",
+    "predeploy": "npm install"
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "hosting": {
+    "public": "../client/build",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
   },
   "env": {
     "NODE_ENV": "production",
-    "FIREBASE_PROJECT_ID": "",
-    "FIREBASE_CLIENT_EMAIL": "",
-    "FIREBASE_PRIVATE_KEY": "",
-    "STRIPE_SECRET_KEY": "",
-    "STRIPE_PUBLISHABLE_KEY": "",
-    "CLIENT_URL": "https://your-app-name.vercel.app"
+    "FIREBASE_PROJECT_ID": "peer2pool-fe068",
+    "CLIENT_URL": "https://your-vercel-app-url.vercel.app"
   }
 }
