@@ -1,0 +1,15 @@
+{
+  "functions": {
+    "source": "server",
+    "runtime": "nodejs18"
+  },
+  "env": {
+    "NODE_ENV": "production",
+    "FIREBASE_PROJECT_ID": "",
+    "FIREBASE_CLIENT_EMAIL": "",
+    "FIREBASE_PRIVATE_KEY": "",
+    "STRIPE_SECRET_KEY": "",
+    "STRIPE_PUBLISHABLE_KEY": "",
+    "CLIENT_URL": "https://your-app-name.vercel.app"
+  }
+}

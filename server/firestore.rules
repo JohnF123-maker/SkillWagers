@@ -1,0 +1,48 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users can read/write their own profile
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Challenges - users can read all, create their own, update their own
+    match /challenges/{challengeId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && 
+        request.auth.uid == resource.data.createdBy;
+      allow update: if request.auth != null && 
+        (request.auth.uid == resource.data.createdBy || 
+         request.auth.uid == resource.data.acceptedBy);
+    }
+    
+    // Escrows - only participants can read, system can write
+    match /escrows/{escrowId} {
+      allow read: if request.auth != null && 
+        (request.auth.uid == resource.data.challenger || 
+         request.auth.uid == resource.data.accepter);
+      allow create, update: if request.auth != null;
+    }
+    
+    // Disputes - participants and admins can read/write
+    match /disputes/{disputeId} {
+      allow read, write: if request.auth != null && 
+        (request.auth.uid == resource.data.challenger || 
+         request.auth.uid == resource.data.accepter ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+    }
+    
+    // Admin only collections
+    match /admin/{document=**} {
+      allow read, write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Transactions - users can read their own
+    match /transactions/{transactionId} {
+      allow read: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      allow create, update: if request.auth != null;
+    }
+  }
+}
