@@ -29,7 +29,7 @@ const Wallet = () => {
 
   useEffect(() => {
     fetchTransactions();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchTransactions = async () => {
     try {

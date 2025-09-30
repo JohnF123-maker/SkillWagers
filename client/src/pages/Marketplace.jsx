@@ -40,7 +40,7 @@ const Marketplace = () => {
 
   useEffect(() => {
     fetchChallenges();
-  }, [filters]);
+  }, [filters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchChallenges = async () => {
     try {

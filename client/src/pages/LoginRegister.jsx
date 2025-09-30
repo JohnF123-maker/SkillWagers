@@ -250,13 +250,21 @@ const LoginRegister = () => {
                   />
                   <label htmlFor="agreeToTerms" className="ml-2 block text-sm text-gray-300">
                     I agree to the{' '}
-                    <a href="#" className="text-primary-400 hover:text-primary-300">
+                    <button 
+                      type="button"
+                      className="text-primary-400 hover:text-primary-300 underline bg-transparent border-none cursor-pointer"
+                      onClick={() => toast.info('Terms and Conditions page coming soon!')}
+                    >
                       Terms and Conditions
-                    </a>{' '}
+                    </button>{' '}
                     and{' '}
-                    <a href="#" className="text-primary-400 hover:text-primary-300">
+                    <button 
+                      type="button"
+                      className="text-primary-400 hover:text-primary-300 underline bg-transparent border-none cursor-pointer"
+                      onClick={() => toast.info('Privacy Policy page coming soon!')}
+                    >
                       Privacy Policy
-                    </a>
+                    </button>
                   </label>
                 </div>
               </>

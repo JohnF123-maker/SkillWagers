@@ -25,7 +25,7 @@ const Profile = () => {
 
   useEffect(() => {
     fetchProfileData();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchProfileData = async () => {
     try {
