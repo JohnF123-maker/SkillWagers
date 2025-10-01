@@ -4,7 +4,13 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './components/AuthContext';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
+import AuthGuard from './components/AuthGuard';
+import BetaModal from './components/BetaModal';
 import LandingPage from './pages/LandingPage';
+import Home from './pages/Home';
+import Wagers from './pages/Wagers';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 import LoginRegister from './pages/LoginRegister';
 import Profile from './pages/Profile';
 import CreateChallenge from './pages/CreateChallenge';
@@ -20,24 +26,36 @@ function App() {
       <Router>
         <div className="min-h-screen bg-dark-900">
           <Navbar />
+          <BetaModal />
           <main className="pt-16">
             <Routes>
               <Route path="/" element={<LandingPage />} />
+              <Route path="/home" element={<Home />} />
+              <Route 
+                path="/wagers" 
+                element={
+                  <AuthGuard>
+                    <Wagers />
+                  </AuthGuard>
+                } 
+              />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
               <Route path="/auth" element={<LoginRegister />} />
               <Route 
                 path="/profile" 
                 element={
-                  <ProtectedRoute>
+                  <AuthGuard>
                     <Profile />
-                  </ProtectedRoute>
+                  </AuthGuard>
                 } 
               />
               <Route 
                 path="/create-challenge" 
                 element={
-                  <ProtectedRoute>
+                  <AuthGuard>
                     <CreateChallenge />
-                  </ProtectedRoute>
+                  </AuthGuard>
                 } 
               />
               <Route path="/marketplace" element={<Marketplace />} />
@@ -45,25 +63,25 @@ function App() {
               <Route 
                 path="/wallet" 
                 element={
-                  <ProtectedRoute>
+                  <AuthGuard>
                     <Wallet />
-                  </ProtectedRoute>
+                  </AuthGuard>
                 } 
               />
               <Route 
                 path="/challenge/:id/proof" 
                 element={
-                  <ProtectedRoute>
+                  <AuthGuard>
                     <ProofDispute />
-                  </ProtectedRoute>
+                  </AuthGuard>
                 } 
               />
               <Route 
                 path="/admin" 
                 element={
-                  <ProtectedRoute adminOnly>
+                  <AuthGuard adminOnly>
                     <AdminPanel />
-                  </ProtectedRoute>
+                  </AuthGuard>
                 } 
               />
             </Routes>

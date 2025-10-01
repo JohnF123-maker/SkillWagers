@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
 import { 
   TrophyIcon, 
@@ -12,6 +12,14 @@ import {
 
 const LandingPage = () => {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect logged-in users to home page
+  useEffect(() => {
+    if (currentUser) {
+      navigate('/home');
+    }
+  }, [currentUser, navigate]);
 
   const features = [
     {

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
+import BetaBadge from './BetaBadge';
+import FakeCurrencyDisplay from './FakeCurrencyDisplay';
 import { 
   HomeIcon, 
   ShoppingBagIcon, 
@@ -32,11 +34,11 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { path: '/', label: 'Home', icon: HomeIcon },
+    { path: '/home', label: 'Home', icon: HomeIcon },
     { path: '/marketplace', label: 'Marketplace', icon: ShoppingBagIcon },
     ...(currentUser ? [
+      { path: '/wagers', label: 'My Wagers', icon: CreditCardIcon },
       { path: '/create-challenge', label: 'Create Challenge', icon: PlusIcon },
-      { path: '/wallet', label: 'Wallet', icon: CreditCardIcon },
       { path: '/profile', label: 'Profile', icon: UserIcon },
     ] : [])
   ];
@@ -53,6 +55,7 @@ const Navbar = () => {
             <span className="gaming-text text-xl font-bold">
               Peer2Pool
             </span>
+            <BetaBadge size="xs" className="ml-2" />
           </Link>
 
           {/* Desktop Navigation */}
@@ -78,13 +81,7 @@ const Navbar = () => {
             {currentUser ? (
               <div className="flex items-center space-x-4">
                 {/* Balance Display */}
-                {userProfile && (
-                  <div className="bg-dark-800 px-3 py-1 rounded-lg border border-gray-600">
-                    <span className="text-accent-400 font-semibold">
-                      ${userProfile.balance?.toFixed(2) || '0.00'}
-                    </span>
-                  </div>
-                )}
+                <FakeCurrencyDisplay showLabel={false} className="bg-dark-800 px-3 py-1 rounded-lg border border-gray-600" />
                 
                 {/* User Menu */}
                 <div className="relative group">
@@ -129,12 +126,20 @@ const Navbar = () => {
                 </div>
               </div>
             ) : (
-              <Link
-                to="/auth"
-                className="btn-primary"
-              >
-                Sign In
-              </Link>
+              <div className="flex items-center space-x-3">
+                <Link
+                  to="/login"
+                  className="text-gray-300 hover:text-white px-3 py-2 text-sm font-medium"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/signup"
+                  className="btn-primary"
+                >
+                  Join Beta
+                </Link>
+              </div>
             )}
           </div>
 
@@ -175,14 +180,9 @@ const Navbar = () => {
               
               {currentUser ? (
                 <div className="border-t border-gray-600 pt-2 mt-2">
-                  {userProfile && (
-                    <div className="px-3 py-2">
-                      <div className="text-sm text-gray-400">Balance</div>
-                      <div className="text-accent-400 font-semibold">
-                        ${userProfile.balance?.toFixed(2) || '0.00'}
-                      </div>
-                    </div>
-                  )}
+                  <div className="px-3 py-2">
+                    <FakeCurrencyDisplay />
+                  </div>
                   <button
                     onClick={handleLogout}
                     className="w-full text-left px-3 py-2 text-base font-medium text-gray-300 hover:text-white hover:bg-dark-700 rounded-md"
@@ -191,13 +191,22 @@ const Navbar = () => {
                   </button>
                 </div>
               ) : (
-                <Link
-                  to="/auth"
-                  onClick={() => setIsOpen(false)}
-                  className="block px-3 py-2 text-base font-medium text-center bg-primary-500 text-white rounded-md hover:bg-primary-600"
-                >
-                  Sign In
-                </Link>
+                <div className="space-y-2">
+                  <Link
+                    to="/login"
+                    onClick={() => setIsOpen(false)}
+                    className="block px-3 py-2 text-base font-medium text-center border border-gray-600 text-gray-300 rounded-md hover:bg-dark-700"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    to="/signup"
+                    onClick={() => setIsOpen(false)}
+                    className="block px-3 py-2 text-base font-medium text-center bg-primary-500 text-white rounded-md hover:bg-primary-600"
+                  >
+                    Join Beta
+                  </Link>
+                </div>
               )}
             </div>
           </div>

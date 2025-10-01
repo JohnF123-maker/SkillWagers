@@ -3,9 +3,12 @@ import {
   onAuthStateChanged, 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
   signOut,
   updateProfile
 } from 'firebase/auth';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { auth } from '../firebase';
 import axios from 'axios';
 
@@ -26,6 +29,8 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+  const functions = getFunctions();
+  const googleProvider = new GoogleAuthProvider();
 
   // Setup axios defaults
   useEffect(() => {
@@ -84,13 +89,56 @@ export const AuthProvider = ({ children }) => {
       email: user.email,
       displayName: displayName,
       photoURL: user.photoURL,
-      dateOfBirth: dateOfBirth
+      dateOfBirth: dateOfBirth,
+      betaUser: true
     }, {
       headers: { Authorization: `Bearer ${idToken}` }
     });
     
     setUserProfile(response.data.user);
     return user;
+  };
+
+  const googleSignIn = async () => {
+    const userCredential = await signInWithPopup(auth, googleProvider);
+    const user = userCredential.user;
+    
+    // Check if this is a new user (first time signing in with Google)
+    const isNewUser = userCredential.additionalUserInfo?.isNewUser;
+    
+    if (isNewUser) {
+      // Register user in backend for new Google users
+      const idToken = await user.getIdToken();
+      const response = await axios.post(`${API_BASE_URL}/auth/register`, {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        betaUser: true,
+        provider: 'google'
+      }, {
+        headers: { Authorization: `Bearer ${idToken}` }
+      });
+      
+      setUserProfile(response.data.user);
+    }
+    
+    return user;
+  };
+
+  const claimDevFunds = async () => {
+    try {
+      const claimDevFundsFunction = httpsCallable(functions, 'claimDevFunds');
+      const result = await claimDevFundsFunction();
+      
+      // Refresh user profile to get updated balance
+      await refreshProfile();
+      
+      return result.data;
+    } catch (error) {
+      console.error('Error claiming dev funds:', error);
+      throw error;
+    }
   };
 
   const logout = async () => {
@@ -147,10 +195,12 @@ export const AuthProvider = ({ children }) => {
     token,
     login,
     register,
+    googleSignIn,
     logout,
     updateUserProfile,
     verifyAge,
     refreshProfile,
+    claimDevFunds,
     loading
   };
 

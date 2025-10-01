@@ -1,15 +1,19 @@
-# Peer2Pool - Skill-Based Gaming Platform
+# Peer2Pool - Skill-Based Gaming Platform (Beta)
 
-A modern, secure gaming platform where players can create and accept skill-based challenges with real money stakes. Built with React, Node.js, Firebase, and Stripe for a professional gaming experience.
+🚨 **BETA VERSION** - Currently in testing phase with simulated currency only. Real money features are disabled.
+
+A modern, secure gaming platform where players can create and accept skill-based challenges. Built with React, Node.js, and Firebase for a professional gaming experience.
 
 ## 🎮 What is Peer2Pool?
 
 Peer2Pool is a competitive gaming platform that allows players to:
 - **Create Challenges**: Set up gaming challenges with custom stakes and rules
 - **Accept Challenges**: Browse and join challenges that match your skill level
-- **Secure Escrow**: Funds are held safely until challenge completion
-- **Dispute Resolution**: Fair arbitration system for challenge conflicts
-- **Real Money Stakes**: Win real money through skill-based gaming
+- **Secure System**: Challenge system with dispute resolution
+- **Gift Card Marketplace**: Trade gift cards for coins (Coming in Phase 2)
+- **Beta Currency**: Test with fake $100 balance for development purposes
+
+⚠️ **BETA NOTICE**: This version uses simulated currency ($100 fake balance) for testing purposes. No real money transactions are processed during Beta testing.
 
 ## 🏗️ Technology Stack
 
@@ -25,7 +29,7 @@ Peer2Pool is a competitive gaming platform that allows players to:
 - **Node.js** - JavaScript runtime
 - **Express.js** - Web application framework
 - **Firebase Admin SDK** - Backend Firebase integration
-- **Stripe API** - Payment processing
+- **Payment Processing** - Disabled for Beta (Stripe commented out)
 - **Helmet** - Security middleware
 - **CORS** - Cross-origin resource sharing
 - **Express Rate Limit** - API rate limiting
@@ -34,20 +38,26 @@ Peer2Pool is a competitive gaming platform that allows players to:
 - **Firebase Firestore** - NoSQL database
 - **Firebase Authentication** - User management
 - **Firebase Storage** - File uploads
-- **Stripe** - Payment processing and escrow
-- **Vercel** - Frontend hosting
-- **Firebase Functions** - Serverless backend
+- **Firebase Functions** - Fake currency allocation for Beta
+- **Payment Services** - Disabled for Beta testing
+- **Hosting** - Local development / Firebase hosting
 
-## 🚀 Key Features
+## 🚀 Key Features (Beta)
 
 ### For Players
 - **User Authentication** - Secure registration and login
 - **Profile Management** - Gaming profiles with stats and achievements
-- **Challenge Marketplace** - Browse available challenges by game and stake
-- **Wallet System** - Deposit, withdraw, and manage funds securely
+- **Challenge System** - Create and accept challenges (Beta functionality)
+- **Fake Wallet System** - Test with $100 simulated balance
 - **Proof Submission** - Upload screenshots/videos as challenge proof
-- **Real-time Notifications** - Stay updated on challenge status
+- **Gift Card Marketplace** - Coming in Phase 2
 - **Mobile Responsive** - Optimized for all devices
+
+### For Beta Testers
+- **Simulated Currency** - $100 fake balance for testing
+- **No Real Payments** - All payment processing disabled
+- **Feedback System** - Report issues and suggestions
+- **Safe Testing Environment** - No financial risk during testing
 
 ### For Administrators
 - **Admin Dashboard** - Complete platform management

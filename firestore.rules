@@ -1,0 +1,122 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+    
+    // Users collection - secure balance management
+    match /users/{userId} {
+      // Users can read their own profile and create their initial profile
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && 
+                   request.resource.data.keys().hasAll(['email', 'displayName']) &&
+                   (!request.resource.data.keys().hasAny(['balance', 'hasClaimed', 'isAdmin']));
+      
+      // Users can update their profile but NOT balance, hasClaimed, or admin status
+      // Balance can only be modified by Cloud Functions or admin
+      allow update: if isOwner(userId) && 
+                   (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['balance', 'hasClaimed', 'isAdmin', 'balanceUpdatedAt'])) ||
+                   isAdmin();
+      
+      // Only admins can delete users
+      allow delete: if isAdmin();
+    }
+    
+    // Challenges collection
+    match /challenges/{challengeId} {
+      // Anyone can read challenges (public marketplace)
+      allow read: if true;
+      
+      // Only authenticated users can create challenges
+      allow create: if isAuthenticated() && 
+                   request.resource.data.creatorId == request.auth.uid;
+      
+      // Only challenge creator or admin can update/delete
+      allow update, delete: if isAuthenticated() && 
+                           (resource.data.creatorId == request.auth.uid || isAdmin());
+    }
+    
+    // Transactions collection - read-only for users, write-only for Cloud Functions
+    match /transactions/{transactionId} {
+      // Users can only read their own transactions
+      allow read: if isAuthenticated() && 
+                 (resource.data.userId == request.auth.uid || 
+                  resource.data.fromUserId == request.auth.uid || 
+                  resource.data.toUserId == request.auth.uid ||
+                  isAdmin());
+      
+      // Only Cloud Functions can create transactions (server-side validation)
+      // This prevents client-side balance manipulation
+      allow create: if false;
+      allow update, delete: if isAdmin();
+    }
+    
+    // Bets/Wagers collection
+    match /bets/{betId} {
+      // Users can read bets they're involved in or public bets
+      allow read: if true;
+      
+      // Users can create bets
+      allow create: if isAuthenticated() && 
+                   request.resource.data.bettorId == request.auth.uid;
+      
+      // Users can update their own bets (within constraints)
+      allow update: if isAuthenticated() && 
+                   (resource.data.bettorId == request.auth.uid || 
+                    resource.data.challengeCreatorId == request.auth.uid ||
+                    isAdmin());
+      
+      allow delete: if isAdmin();
+    }
+    
+    // Disputes collection
+    match /disputes/{disputeId} {
+      // Users can read disputes they're involved in
+      allow read: if isAuthenticated() && 
+                 (resource.data.reporterId == request.auth.uid || 
+                  resource.data.challengeCreatorId == request.auth.uid ||
+                  isAdmin());
+      
+      // Users can create disputes for challenges they're involved in
+      allow create: if isAuthenticated() && 
+                   request.resource.data.reporterId == request.auth.uid;
+      
+      // Only admins can update/resolve disputes
+      allow update, delete: if isAdmin();
+    }
+    
+    // Admin logs collection
+    match /adminLogs/{logId} {
+      // Only admins can read/write admin logs
+      allow read, write: if isAdmin();
+    }
+    
+    // Beta feedback collection
+    match /betaFeedback/{feedbackId} {
+      // Users can create feedback
+      allow create: if isAuthenticated() && 
+                   request.resource.data.userId == request.auth.uid;
+      
+      // Users can read their own feedback, admins can read all
+      allow read: if isAuthenticated() && 
+                 (resource.data.userId == request.auth.uid || isAdmin());
+      
+      // Only admins can update/delete feedback
+      allow update, delete: if isAdmin();
+    }
+  }
+}
