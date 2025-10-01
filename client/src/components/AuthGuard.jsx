@@ -13,9 +13,9 @@ const AuthGuard = ({ children, adminOnly = false }) => {
       <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center">
         <div className="flex items-center space-x-2 mb-4">
           <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">P2P</span>
+            <span className="text-white font-bold text-sm">SW</span>
           </div>
-          <span className="text-xl font-bold text-gray-900">Peer2Pool</span>
+          <span className="text-xl font-bold text-gray-900">SkillWagers</span>
           <BetaBadge size="xs" />
         </div>
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
@@ -36,9 +36,9 @@ const AuthGuard = ({ children, adminOnly = false }) => {
         <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6 text-center">
           <div className="flex justify-center items-center space-x-2 mb-4">
             <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">P2P</span>
+              <span className="text-white font-bold text-sm">SW</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">Peer2Pool</span>
+            <span className="text-xl font-bold text-gray-900">SkillWagers</span>
             <BetaBadge size="xs" />
           </div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Access Denied</h2>

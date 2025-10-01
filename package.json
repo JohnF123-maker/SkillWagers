@@ -1,7 +1,7 @@
 {
-  "name": "peer2pool",
+  "name": "skillwagers",
   "version": "1.0.0",
-  "description": "Peer2Pool MVP - Skill-based gaming platform with escrow and dispute resolution",
+  "description": "SkillWagers - Skill-based gaming platform with escrow and dispute resolution",
   "main": "index.js",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",

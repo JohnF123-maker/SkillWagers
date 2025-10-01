@@ -5,10 +5,11 @@ import { AuthProvider } from './components/AuthContext';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import AuthGuard from './components/AuthGuard';
-import BetaModal from './components/BetaModal';
+import BetaModel from './components/BetaModel';
 import LandingPage from './pages/LandingPage';
 import Home from './pages/Home';
 import Wagers from './pages/Wagers';
+import Wagering from './pages/Wagering';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import LoginRegister from './pages/LoginRegister';
@@ -26,11 +27,12 @@ function App() {
       <Router>
         <div className="min-h-screen bg-dark-900">
           <Navbar />
-          <BetaModal />
+          <BetaModel />
           <main className="pt-16">
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/home" element={<Home />} />
+              <Route path="/wagering" element={<Wagering />} />
               <Route 
                 path="/wagers" 
                 element={

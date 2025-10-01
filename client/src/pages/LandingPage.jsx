@@ -44,8 +44,8 @@ const LandingPage = () => {
     },
     {
       icon: BoltIcon,
-      title: 'Instant Payouts',
-      description: 'Get your winnings instantly after challenge completion and verification.'
+      title: 'Fast Payouts',
+      description: 'Instant payouts for games that support it; otherwise up to 24 hours depending on the challenge.'
     },
     {
       icon: StarIcon,
@@ -127,7 +127,7 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Why Choose <span className="gaming-text">Peer2Pool</span>?
+              Why Choose <span className="gaming-text">SkillWagers</span>?
             </h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
               Experience the future of competitive gaming with our secure, fair, and rewarding platform.
@@ -244,7 +244,7 @@ const LandingPage = () => {
           </p>
           {!currentUser && (
             <Link to="/auth" className="btn-accent text-lg px-8 py-4 inline-block">
-              Join Peer2Pool Today
+              Join SkillWagers Today
             </Link>
           )}
         </div>

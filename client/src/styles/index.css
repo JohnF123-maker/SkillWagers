@@ -76,6 +76,8 @@
   
   .gaming-text {
     @apply bg-gradient-to-r from-primary-400 via-secondary-400 to-accent-400 bg-clip-text text-transparent font-gaming;
+    padding-right: 2px; /* Prevent clipping of last characters */
+    display: inline-block; /* Ensure padding is respected */
   }
   
   .glow-effect {

@@ -1,7 +1,7 @@
 {
-  "name": "peer2pool-server",
+  "name": "skillwagers-server",
   "version": "1.0.0",
-  "description": "Peer2Pool backend server",
+  "description": "SkillWagers backend server",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

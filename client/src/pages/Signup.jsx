@@ -87,7 +87,7 @@ const Signup = () => {
         formData.displayName,
         formData.dateOfBirth
       );
-      toast.success('Account created successfully! Welcome to Peer2Pool Beta!');
+      toast.success('Account created successfully! Welcome to SkillWagers Beta!');
       navigate('/');
     } catch (error) {
       console.error('Registration error:', error);
@@ -110,7 +110,7 @@ const Signup = () => {
     setLoading(true);
     try {
       await googleSignIn();
-      toast.success('Account created successfully! Welcome to Peer2Pool Beta!');
+      toast.success('Account created successfully! Welcome to SkillWagers Beta!');
       navigate('/');
     } catch (error) {
       console.error('Google sign up error:', error);
@@ -127,7 +127,7 @@ const Signup = () => {
           <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold">P2P</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Peer2Pool</h1>
+          <h1 className="text-2xl font-bold text-gray-900">SkillWagers</h1>
           <BetaBadge size="sm" />
         </div>
         

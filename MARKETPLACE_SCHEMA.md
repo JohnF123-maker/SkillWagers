@@ -1,7 +1,7 @@
-# Peer2Pool Beta - Marketplace Schema & Development Plan
+# SkillWagers Beta - Marketplace Schema & Development Plan
 
 ## Overview
-This document outlines the planned marketplace functionality for Peer2Pool Beta Phase 2 and beyond.
+This document outlines the planned marketplace functionality for SkillWagers Beta Phase 2 and beyond.
 
 ## Current Status (Beta Phase 1)
 - ✅ User authentication and registration
@@ -263,7 +263,7 @@ match /challenge_participants/{participantId} {
 - In-app feedback forms
 - Beta user surveys
 - Discord community discussions
-- Direct email: beta@peer2pool.com
+- Direct email: beta@skillwagers.com
 
 ---
 

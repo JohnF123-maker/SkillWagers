@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
+import PasswordInput from '../components/PasswordInput';
 import toast from 'react-hot-toast';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
 const LoginRegister = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -130,7 +129,7 @@ const LoginRegister = () => {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <h2 className="text-3xl font-bold gaming-text">
-            {isLogin ? 'Welcome Back' : 'Join Peer2Pool'}
+            {isLogin ? 'Welcome Back' : 'Join SkillWagers'}
           </h2>
           <p className="mt-2 text-gray-300">
             {isLogin 
@@ -176,52 +175,27 @@ const LoginRegister = () => {
               />
             </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="input-field pr-10"
-                  placeholder="Enter your password"
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeSlashIcon className="h-5 w-5 text-gray-400" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5 text-gray-400" />
-                  )}
-                </button>
-              </div>
-            </div>
+            <PasswordInput
+              name="password"
+              label="Password"
+              required
+              value={formData.password}
+              onChange={handleChange}
+              className="input-field"
+              placeholder="Enter your password"
+            />
 
             {!isLogin && (
               <>
-                <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-2">
-                    Confirm Password
-                  </label>
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    required
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    className="input-field"
-                    placeholder="Confirm your password"
-                  />
-                </div>
+                <PasswordInput
+                  name="confirmPassword"
+                  label="Confirm Password"
+                  required
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="input-field"
+                  placeholder="Confirm your password"
+                />
 
                 <div>
                   <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-300 mb-2">
@@ -314,7 +288,7 @@ const LoginRegister = () => {
                 </h3>
                 <div className="mt-2 text-sm text-accent-300">
                   <p>
-                    You must be 18 years or older to use Peer2Pool. This is required by law for real money gaming platforms.
+                    You must be 18 years or older to use SkillWagers. This is required by law for real money gaming platforms.
                   </p>
                 </div>
               </div>

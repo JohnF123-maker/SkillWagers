@@ -65,10 +65,10 @@ const Home = () => {
             <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">P2P</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">Peer2Pool</span>
+            <span className="text-xl font-bold text-gray-900">SkillWagers</span>
             <BetaBadge size="xs" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Welcome to Peer2Pool Beta</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Welcome to SkillWagers Beta</h2>
           <p className="text-gray-600 mb-4">
             Please sign in to access your dashboard and start wagering with fake currency.
           </p>
@@ -254,7 +254,7 @@ const Home = () => {
             <h3 className="text-lg font-semibold text-orange-800">Beta Testing Mode</h3>
           </div>
           <p className="text-sm text-orange-700">
-            You're using Peer2Pool Beta with fake currency for testing purposes. All wagers, earnings, and statistics are simulated. 
+            You're using SkillWagers Beta with fake currency for testing purposes. All wagers, earnings, and statistics are simulated. 
             Help us improve by reporting any issues you encounter!
           </p>
         </div>

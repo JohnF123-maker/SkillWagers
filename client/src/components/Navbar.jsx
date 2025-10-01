@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import BetaBadge from './BetaBadge';
 import FakeCurrencyDisplay from './FakeCurrencyDisplay';
+import AuthWidget from './AuthWidget';
 import { 
   HomeIcon, 
   ShoppingBagIcon, 
@@ -35,6 +36,7 @@ const Navbar = () => {
 
   const navLinks = [
     { path: '/home', label: 'Home', icon: HomeIcon },
+    { path: '/wagering', label: 'Wagering', icon: CreditCardIcon },
     { path: '/marketplace', label: 'Marketplace', icon: ShoppingBagIcon },
     ...(currentUser ? [
       { path: '/wagers', label: 'My Wagers', icon: CreditCardIcon },
@@ -53,7 +55,7 @@ const Navbar = () => {
               <span className="text-white font-bold text-sm">P2P</span>
             </div>
             <span className="gaming-text text-xl font-bold">
-              Peer2Pool
+              SkillWagers
             </span>
             <BetaBadge size="xs" className="ml-2" />
           </Link>
@@ -78,69 +80,7 @@ const Navbar = () => {
 
           {/* Right Side */}
           <div className="hidden md:flex items-center space-x-4">
-            {currentUser ? (
-              <div className="flex items-center space-x-4">
-                {/* Balance Display */}
-                <FakeCurrencyDisplay showLabel={false} className="bg-dark-800 px-3 py-1 rounded-lg border border-gray-600" />
-                
-                {/* User Menu */}
-                <div className="relative group">
-                  <button className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-dark-800 hover:bg-dark-700 transition-colors">
-                    <img
-                      src={currentUser.photoURL || 'https://via.placeholder.com/32'}
-                      alt="Profile"
-                      className="w-6 h-6 rounded-full"
-                    />
-                    <span className="text-sm font-medium">
-                      {userProfile?.displayName || currentUser.email?.split('@')[0]}
-                    </span>
-                  </button>
-                  
-                  {/* Dropdown Menu */}
-                  <div className="absolute right-0 mt-2 w-48 bg-dark-800 rounded-lg shadow-lg border border-gray-600 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200">
-                    <div className="py-1">
-                      <Link
-                        to="/profile"
-                        className="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-dark-700 hover:text-white"
-                      >
-                        <UserIcon className="w-4 h-4 mr-2" />
-                        Profile
-                      </Link>
-                      {userProfile?.isAdmin && (
-                        <Link
-                          to="/admin"
-                          className="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-dark-700 hover:text-white"
-                        >
-                          <CogIcon className="w-4 h-4 mr-2" />
-                          Admin Panel
-                        </Link>
-                      )}
-                      <button
-                        onClick={handleLogout}
-                        className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-dark-700 hover:text-white"
-                      >
-                        Logout
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center space-x-3">
-                <Link
-                  to="/login"
-                  className="text-gray-300 hover:text-white px-3 py-2 text-sm font-medium"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  to="/signup"
-                  className="btn-primary"
-                >
-                  Join Beta
-                </Link>
-              </div>
-            )}
+            <AuthWidget />
           </div>
 
           {/* Mobile menu button */}
@@ -178,36 +118,11 @@ const Navbar = () => {
                 </Link>
               ))}
               
-              {currentUser ? (
-                <div className="border-t border-gray-600 pt-2 mt-2">
-                  <div className="px-3 py-2">
-                    <FakeCurrencyDisplay />
-                  </div>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left px-3 py-2 text-base font-medium text-gray-300 hover:text-white hover:bg-dark-700 rounded-md"
-                  >
-                    Logout
-                  </button>
+              <div className="border-t border-gray-600 pt-2 mt-2">
+                <div className="px-3 py-2">
+                  <AuthWidget />
                 </div>
-              ) : (
-                <div className="space-y-2">
-                  <Link
-                    to="/login"
-                    onClick={() => setIsOpen(false)}
-                    className="block px-3 py-2 text-base font-medium text-center border border-gray-600 text-gray-300 rounded-md hover:bg-dark-700"
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    to="/signup"
-                    onClick={() => setIsOpen(false)}
-                    className="block px-3 py-2 text-base font-medium text-center bg-primary-500 text-white rounded-md hover:bg-primary-600"
-                  >
-                    Join Beta
-                  </Link>
-                </div>
-              )}
+              </div>
             </div>
           </div>
         )}

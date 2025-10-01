@@ -149,7 +149,7 @@ const Marketplace = () => {
           
           <div className="space-y-3">
             <div className="text-sm text-gray-500">
-              Send feedback to: <strong>beta@peer2pool.com</strong>
+              Send feedback to: <strong>beta@skillwagers.com</strong>
             </div>
             <div className="text-sm text-gray-500">
               Gift Card Trading Launch: <strong>Q2 2024</strong>

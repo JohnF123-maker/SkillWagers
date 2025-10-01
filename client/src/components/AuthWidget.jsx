@@ -1,0 +1,67 @@
+import React, { useEffect, useState } from 'react';
+import { auth, googleProvider } from '../lib/firebase';
+import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
+
+const AuthWidget = () => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    try {
+      await signInWithPopup(auth, googleProvider);
+    } catch (error) {
+      console.error('Google sign-in error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
+  };
+
+  if (!user) {
+    return (
+      <button 
+        className="rounded-xl border border-orange-600 text-orange-600 px-4 py-2 hover:bg-orange-50 transition-colors disabled:opacity-50"
+        onClick={handleGoogleSignIn}
+        disabled={loading}
+      >
+        {loading ? 'Signing in...' : 'Sign in with Google'}
+      </button>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-3">
+      <img 
+        src={user.photoURL || '/avatar.svg'} 
+        alt={user.displayName || 'User'} 
+        className="h-8 w-8 rounded-full border border-gray-300" 
+      />
+      <span className="text-sm text-gray-700 hidden sm:block">
+        {user.displayName || user.email}
+      </span>
+      <button 
+        className="rounded-xl border border-gray-300 text-gray-600 px-3 py-1 hover:bg-gray-50 transition-colors text-sm"
+        onClick={handleSignOut}
+      >
+        Sign out
+      </button>
+    </div>
+  );
+};
+
+export default AuthWidget;

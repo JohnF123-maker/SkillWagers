@@ -1,12 +1,12 @@
-# Peer2Pool - Skill-Based Gaming Platform (Beta)
+# SkillWagers - Skill-Based Gaming Platform (Beta)
 
 🚨 **BETA VERSION** - Currently in testing phase with simulated currency only. Real money features are disabled.
 
 A modern, secure gaming platform where players can create and accept skill-based challenges. Built with React, Node.js, and Firebase for a professional gaming experience.
 
-## 🎮 What is Peer2Pool?
+## 🎮 What is SkillWagers?
 
-Peer2Pool is a competitive gaming platform that allows players to:
+SkillWagers is a competitive gaming platform that allows players to:
 - **Create Challenges**: Set up gaming challenges with custom stakes and rules
 - **Accept Challenges**: Browse and join challenges that match your skill level
 - **Secure System**: Challenge system with dispute resolution
@@ -172,8 +172,8 @@ Peer2Pool is a competitive gaming platform that allows players to:
 ## 🤝 Contributing
 
 This is a commercial platform project. For business inquiries or technical questions:
-- **Business**: admin@peer2pool.com
-- **Support**: support@peer2pool.com
+- **Business**: admin@skillwagers.com
+- **Support**: support@skillwagers.com
 - **Technical**: Create an issue in this repository
 
 ## 📜 License
@@ -190,6 +190,6 @@ Proprietary - All rights reserved. This project is for commercial use by authori
 
 ---
 
-**Ready to turn your gaming skills into real money? Join Peer2Pool today!**
+**Ready to turn your gaming skills into real money? Join SkillWagers today!**
 
 *Built with ❤️ for the gaming community*
