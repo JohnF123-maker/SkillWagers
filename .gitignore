@@ -16,6 +16,8 @@ server/node_modules/
 
 build/          # CRA build output
 dist/           # Vite/TS build output
+client/build/   # Client build files
+server/build/   # Server build files
 .next/          # Next.js
 .out/
 coverage/
@@ -58,6 +60,18 @@ firebase-debug.log
 firebase-debug.*.log
 *-firebase-adminsdk-*.json
 service-account-key.json
+
+# Firebase configuration files (project-specific)
+.firebaserc
+firebase.json
+firestore.rules
+firestore.indexes.json
+storage.rules
+functions/
+
+# Keep Firebase client config as examples only
+!firebase.example.json
+!firestore.example.rules
 
 # ─────────────────────────────
 # Stripe
