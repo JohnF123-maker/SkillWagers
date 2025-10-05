@@ -11,6 +11,22 @@
   * {
     @apply scrollbar-thin scrollbar-thumb-primary-600 scrollbar-track-dark-800;
   }
+
+  /* Ensure all text is fully opaque and readable */
+  h1, h2, h3, h4, h5, h6, p, span, div, a, button, label {
+    opacity: 1 !important;
+  }
+  
+  /* Specific fixes for gradient text readability */
+  .gaming-text, .gaming-text * {
+    opacity: 1 !important;
+  }
+  
+  /* Enhance gray text readability */
+  .text-gray-300, .text-gray-400 {
+    opacity: 1 !important;
+    filter: brightness(1.1); /* Slightly brighten gray text */
+  }
 }
 
 @layer components {
@@ -75,9 +91,18 @@
   }
   
   .gaming-text {
-    @apply bg-gradient-to-r from-primary-400 via-secondary-400 to-accent-400 bg-clip-text text-transparent font-gaming;
-    padding-right: 2px; /* Prevent clipping of last characters */
+    @apply bg-gradient-to-r from-primary-400 via-secondary-400 to-accent-400 bg-clip-text font-gaming font-bold;
+    color: #f59e0b !important; /* Strong fallback color when gradient fails */
+    -webkit-background-clip: text;
+    background-clip: text; /* Standard property for compatibility */
+    -webkit-text-fill-color: transparent;
+    padding-right: 4px; /* Increase padding to prevent clipping of last characters */
+    padding-left: 1px; /* Add small left padding for consistency */
     display: inline-block; /* Ensure padding is respected */
+    /* Ensure text is fully opaque by forcing opacity */
+    opacity: 1 !important;
+    /* Add text shadow for better readability */
+    text-shadow: 0 0 1px rgba(245, 158, 11, 0.5);
   }
   
   .glow-effect {

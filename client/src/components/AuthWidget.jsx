@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { auth, googleProvider } from '../lib/firebase';
 import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 
@@ -34,13 +35,12 @@ const AuthWidget = () => {
 
   if (!user) {
     return (
-      <button 
-        className="rounded-xl border border-orange-600 text-orange-600 px-4 py-2 hover:bg-orange-50 transition-colors disabled:opacity-50"
-        onClick={handleGoogleSignIn}
-        disabled={loading}
+      <Link
+        to="/login" 
+        className="rounded-xl border border-orange-600 text-orange-600 px-4 py-2 hover:bg-orange-600 hover:text-white transition-colors text-sm font-medium"
       >
-        {loading ? 'Signing in...' : 'Sign in with Google'}
-      </button>
+        Login/Register
+      </Link>
     );
   }
 
@@ -51,11 +51,11 @@ const AuthWidget = () => {
         alt={user.displayName || 'User'} 
         className="h-8 w-8 rounded-full border border-gray-300" 
       />
-      <span className="text-sm text-gray-700 hidden sm:block">
+      <span className="text-sm text-gray-300 hidden sm:block">
         {user.displayName || user.email}
       </span>
       <button 
-        className="rounded-xl border border-gray-300 text-gray-600 px-3 py-1 hover:bg-gray-50 transition-colors text-sm"
+        className="rounded-xl border border-gray-300 text-gray-300 hover:text-white hover:border-white px-3 py-1 transition-colors text-sm"
         onClick={handleSignOut}
       >
         Sign out

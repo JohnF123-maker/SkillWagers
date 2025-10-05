@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
 import BetaBadge from '../components/BetaBadge';
-import toast from 'react-hot-toast';
+import ErrorTooltip from '../components/ErrorTooltip';
 import { EyeIcon, EyeSlashIcon, UserPlusIcon } from '@heroicons/react/24/outline';
 
 const Signup = () => {
@@ -17,60 +17,160 @@ const Signup = () => {
     dateOfBirth: '',
     agreeToTerms: false
   });
+  
+  // Error state for inline validation
+  const [errors, setErrors] = useState({});
 
   const { register, googleSignIn } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
+    
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: newValue
     }));
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+
+    // Real-time validation for specific fields
+    validateField(name, newValue);
+  };
+
+  const validateField = (fieldName, value) => {
+    let error = '';
+
+    switch (fieldName) {
+      case 'email':
+        if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          error = 'Please enter a valid email address';
+        }
+        break;
+      
+      case 'password':
+        if (value && value.length < 6) {
+          error = 'Password must be at least 6 characters';
+        }
+        break;
+      
+      case 'confirmPassword':
+        if (value && value !== formData.password) {
+          error = 'Passwords do not match';
+        }
+        break;
+      
+      case 'dateOfBirth':
+        if (value) {
+          const birthDate = new Date(value);
+          const today = new Date();
+          const birthYear = birthDate.getFullYear();
+          
+          // Check basic date validity first
+          if (birthYear < 1930) {
+            error = 'Please enter a valid birth year';
+          } else if (birthDate > today) {
+            error = 'Birth date cannot be in the future';
+          } else {
+            // Only check age if date is valid and not in future
+            const age = today.getFullYear() - birthYear - 
+                       (today.getMonth() < birthDate.getMonth() || 
+                        (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate()) ? 1 : 0);
+            
+            if (age < 18) {
+              error = 'You must be 18 or older to register';
+            }
+          }
+        }
+        break;
+      
+      case 'displayName':
+        if (value && value.length < 2) {
+          error = 'Display name must be at least 2 characters';
+        }
+        break;
+      
+      default:
+        // No validation needed for other fields
+        break;
+    }
+
+    if (error) {
+      setErrors(prev => ({
+        ...prev,
+        [fieldName]: error
+      }));
+    }
   };
 
   const validateForm = () => {
-    if (!formData.email || !formData.password || !formData.displayName) {
-      toast.error('Please fill in all required fields');
-      return false;
+    const newErrors = {};
+
+    // Validate all required fields
+    if (!formData.displayName.trim()) {
+      newErrors.displayName = 'Display name is required';
+    } else if (formData.displayName.length < 2) {
+      newErrors.displayName = 'Display name must be at least 2 characters';
     }
 
-    if (formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
-      return false;
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email address is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
     }
 
-    if (formData.password.length < 6) {
-      toast.error('Password must be at least 6 characters');
-      return false;
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your password';
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
     }
 
     if (!formData.dateOfBirth) {
-      toast.error('Date of birth is required');
-      return false;
-    }
-
-    // Check age (18+)
-    const birthDate = new Date(formData.dateOfBirth);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    
-    if (age < 18) {
-      toast.error('You must be 18 or older to register');
-      return false;
+      newErrors.dateOfBirth = 'Date of birth is required';
+    } else {
+      const birthDate = new Date(formData.dateOfBirth);
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const birthYear = birthDate.getFullYear();
+      
+      // Check basic validity first
+      if (birthYear < 1930) {
+        newErrors.dateOfBirth = 'Please enter a valid birth year';
+      } else if (birthYear > currentYear) {
+        newErrors.dateOfBirth = 'Birth year cannot be in the future';
+      } else if (birthDate > today) {
+        newErrors.dateOfBirth = 'Birth date cannot be in the future';
+      } else {
+        // Only check age if date is valid and not in future
+        const age = currentYear - birthYear - 
+                   (today.getMonth() < birthDate.getMonth() || 
+                    (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate()) ? 1 : 0);
+        
+        if (age < 18) {
+          newErrors.dateOfBirth = 'You must be 18 or older to register';
+        }
+      }
     }
 
     if (!formData.agreeToTerms) {
-      toast.error('You must agree to the terms and conditions');
-      return false;
+      newErrors.agreeToTerms = 'You must agree to the terms and conditions';
     }
 
-    return true;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
@@ -87,19 +187,18 @@ const Signup = () => {
         formData.displayName,
         formData.dateOfBirth
       );
-      toast.success('Account created successfully! Welcome to SkillWagers Beta!');
       navigate('/');
     } catch (error) {
       console.error('Registration error:', error);
       
       if (error.code === 'auth/email-already-in-use') {
-        toast.error('Email already in use');
+        setErrors({ email: 'This email address is already in use' });
       } else if (error.code === 'auth/weak-password') {
-        toast.error('Password is too weak');
+        setErrors({ password: 'Password is too weak. Please choose a stronger password' });
       } else if (error.code === 'auth/invalid-email') {
-        toast.error('Invalid email address');
+        setErrors({ email: 'Invalid email address format' });
       } else {
-        toast.error(error.message || 'Registration failed');
+        setErrors({ password: error.message || 'Registration failed. Please try again' });
       }
     } finally {
       setLoading(false);
@@ -110,44 +209,44 @@ const Signup = () => {
     setLoading(true);
     try {
       await googleSignIn();
-      toast.success('Account created successfully! Welcome to SkillWagers Beta!');
       navigate('/');
     } catch (error) {
       console.error('Google sign up error:', error);
-      toast.error('Google sign up failed');
+      setErrors({ password: 'Google sign up failed. Please try again.' });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-dark-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center items-center space-x-2">
           <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold">P2P</span>
+            <span className="font-bold" style={{ color: 'white' }}>S</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">SkillWagers</h1>
+          <h1 className="text-2xl font-bold" style={{ color: 'white' }}>SkillWagers</h1>
           <BetaBadge size="sm" />
         </div>
         
-        <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
+        <h2 className="mt-6 text-center text-3xl font-bold" style={{ color: 'white' }}>
           Create your account
         </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
+        <p className="mt-2 text-center text-sm" style={{ color: 'white' }}>
           Join the Beta and start with $100 fake currency
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="bg-dark-800 py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-gray-700">
           {/* Google Sign Up */}
           <div className="mb-6">
             <button
               type="button"
               onClick={handleGoogleSignUp}
               disabled={loading}
-              className="w-full flex justify-center items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+              className="w-full flex justify-center items-center px-4 py-2 border border-gray-600 rounded-md shadow-sm text-sm font-medium bg-dark-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+              style={{ color: 'white' }}
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                 <path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -161,18 +260,21 @@ const Signup = () => {
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
+              <div className="w-full border-t border-gray-600" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or sign up with email</span>
+              <span className="px-2 bg-dark-800" style={{ color: 'white' }}>Or sign up with email</span>
             </div>
           </div>
 
           <form className="mt-6 space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="displayName" className="block text-sm font-medium text-gray-700">
-                Display Name *
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="displayName" className="block text-sm font-medium" style={{ color: 'white' }}>
+                  Display Name *
+                </label>
+                {errors.displayName && <ErrorTooltip message={errors.displayName} />}
+              </div>
               <div className="mt-1">
                 <input
                   id="displayName"
@@ -181,16 +283,36 @@ const Signup = () => {
                   required
                   value={formData.displayName}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  style={{
+                    backgroundColor: 'white',
+                    color: 'black',
+                    border: errors.displayName ? '1px solid #ef4444' : '1px solid #d1d5db',
+                    borderRadius: '6px',
+                    padding: '12px 16px',
+                    width: '100%',
+                    fontSize: '14px',
+                    outline: 'none'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = errors.displayName ? '#ef4444' : '#f59e0b';
+                    e.target.style.boxShadow = errors.displayName ? '0 0 0 2px rgba(239, 68, 68, 0.2)' : '0 0 0 2px rgba(245, 158, 11, 0.2)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = errors.displayName ? '#ef4444' : '#d1d5db';
+                    e.target.style.boxShadow = 'none';
+                  }}
                   placeholder="Your display name"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address *
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="email" className="block text-sm font-medium" style={{ color: 'white' }}>
+                  Email address *
+                </label>
+                {errors.email && <ErrorTooltip message={errors.email} />}
+              </div>
               <div className="mt-1">
                 <input
                   id="email"
@@ -200,33 +322,75 @@ const Signup = () => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  style={{
+                    backgroundColor: 'white',
+                    color: 'black',
+                    border: errors.email ? '1px solid #ef4444' : '1px solid #d1d5db',
+                    borderRadius: '6px',
+                    padding: '12px 16px',
+                    width: '100%',
+                    fontSize: '14px',
+                    outline: 'none'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = errors.email ? '#ef4444' : '#f59e0b';
+                    e.target.style.boxShadow = errors.email ? '0 0 0 2px rgba(239, 68, 68, 0.2)' : '0 0 0 2px rgba(245, 158, 11, 0.2)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = errors.email ? '#ef4444' : '#d1d5db';
+                    e.target.style.boxShadow = 'none';
+                  }}
                   placeholder="Enter your email"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700">
-                Date of Birth * (18+ required)
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="dateOfBirth" className="block text-sm font-medium" style={{ color: 'white' }}>
+                  Date of Birth * (18+ required)
+                </label>
+                {errors.dateOfBirth && <ErrorTooltip message={errors.dateOfBirth} />}
+              </div>
               <div className="mt-1">
                 <input
                   id="dateOfBirth"
                   name="dateOfBirth"
                   type="date"
                   required
+                  min="1930-01-01"
+                  max={new Date().toISOString().split('T')[0]}
                   value={formData.dateOfBirth}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  style={{
+                    backgroundColor: 'white',
+                    color: 'black',
+                    border: errors.dateOfBirth ? '1px solid #ef4444' : '1px solid #d1d5db',
+                    borderRadius: '6px',
+                    padding: '12px 16px',
+                    width: '100%',
+                    fontSize: '14px',
+                    outline: 'none'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = errors.dateOfBirth ? '#ef4444' : '#f59e0b';
+                    e.target.style.boxShadow = errors.dateOfBirth ? '0 0 0 2px rgba(239, 68, 68, 0.2)' : '0 0 0 2px rgba(245, 158, 11, 0.2)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = errors.dateOfBirth ? '#ef4444' : '#d1d5db';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password *
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="password" className="block text-sm font-medium" style={{ color: 'white' }}>
+                  Password *
+                </label>
+                {errors.password && <ErrorTooltip message={errors.password} />}
+              </div>
               <div className="mt-1 relative">
                 <input
                   id="password"
@@ -236,7 +400,24 @@ const Signup = () => {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  style={{
+                    backgroundColor: 'white',
+                    color: 'black',
+                    border: errors.password ? '1px solid #ef4444' : '1px solid #d1d5db',
+                    borderRadius: '6px',
+                    padding: '12px 48px 12px 16px',
+                    width: '100%',
+                    fontSize: '14px',
+                    outline: 'none'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = errors.password ? '#ef4444' : '#f59e0b';
+                    e.target.style.boxShadow = errors.password ? '0 0 0 2px rgba(239, 68, 68, 0.2)' : '0 0 0 2px rgba(245, 158, 11, 0.2)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = errors.password ? '#ef4444' : '#d1d5db';
+                    e.target.style.boxShadow = 'none';
+                  }}
                   placeholder="Create a password (6+ characters)"
                 />
                 <button
@@ -245,18 +426,21 @@ const Signup = () => {
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+                    <EyeSlashIcon className="h-5 w-5 text-gray-400 hover:text-gray-200" />
                   ) : (
-                    <EyeIcon className="h-5 w-5 text-gray-400" />
+                    <EyeIcon className="h-5 w-5 text-gray-400 hover:text-gray-200" />
                   )}
                 </button>
               </div>
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Confirm Password *
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="confirmPassword" className="block text-sm font-medium" style={{ color: 'white' }}>
+                  Confirm Password *
+                </label>
+                {errors.confirmPassword && <ErrorTooltip message={errors.confirmPassword} />}
+              </div>
               <div className="mt-1 relative">
                 <input
                   id="confirmPassword"
@@ -266,7 +450,24 @@ const Signup = () => {
                   required
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  style={{
+                    backgroundColor: 'white',
+                    color: 'black',
+                    border: errors.confirmPassword ? '1px solid #ef4444' : '1px solid #d1d5db',
+                    borderRadius: '6px',
+                    padding: '12px 48px 12px 16px',
+                    width: '100%',
+                    fontSize: '14px',
+                    outline: 'none'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = errors.confirmPassword ? '#ef4444' : '#f59e0b';
+                    e.target.style.boxShadow = errors.confirmPassword ? '0 0 0 2px rgba(239, 68, 68, 0.2)' : '0 0 0 2px rgba(245, 158, 11, 0.2)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = errors.confirmPassword ? '#ef4444' : '#d1d5db';
+                    e.target.style.boxShadow = 'none';
+                  }}
                   placeholder="Confirm your password"
                 />
                 <button
@@ -275,41 +476,55 @@ const Signup = () => {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
                   {showConfirmPassword ? (
-                    <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+                    <EyeSlashIcon className="h-5 w-5 text-gray-400 hover:text-gray-200" />
                   ) : (
-                    <EyeIcon className="h-5 w-5 text-gray-400" />
+                    <EyeIcon className="h-5 w-5 text-gray-400 hover:text-gray-200" />
                   )}
                 </button>
               </div>
             </div>
 
-            <div className="flex items-center">
-              <input
-                id="agreeToTerms"
-                name="agreeToTerms"
-                type="checkbox"
-                required
-                checked={formData.agreeToTerms}
-                onChange={handleChange}
-                className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
-              />
-              <label htmlFor="agreeToTerms" className="ml-2 block text-sm text-gray-900">
-                I agree to the{' '}
-                <a href="#" className="text-orange-600 hover:text-orange-500">
-                  Terms and Conditions
-                </a>{' '}
-                and{' '}
-                <a href="#" className="text-orange-600 hover:text-orange-500">
-                  Privacy Policy
-                </a>
-              </label>
+            <div>
+              <div className="flex items-center">
+                <input
+                  id="agreeToTerms"
+                  name="agreeToTerms"
+                  type="checkbox"
+                  required
+                  checked={formData.agreeToTerms}
+                  onChange={handleChange}
+                  className={`h-4 w-4 text-orange-600 focus:ring-orange-500 border rounded bg-dark-700 ${
+                    errors.agreeToTerms ? 'border-red-500' : 'border-gray-600'
+                  }`}
+                />
+                <label htmlFor="agreeToTerms" className="ml-2 block text-sm" style={{ color: 'white' }}>
+                  I agree to the{' '}
+                  <button
+                    type="button"
+                    className="text-orange-600 hover:text-orange-500 underline bg-transparent border-none cursor-pointer"
+                    onClick={() => console.log('Open Terms and Conditions')}
+                  >
+                    Terms and Conditions
+                  </button>{' '}
+                  and{' '}
+                  <button
+                    type="button"
+                    className="text-orange-600 hover:text-orange-500 underline bg-transparent border-none cursor-pointer"
+                    onClick={() => console.log('Open Privacy Policy')}
+                  >
+                    Privacy Policy
+                  </button>
+                </label>
+                {errors.agreeToTerms && <ErrorTooltip message={errors.agreeToTerms} />}
+              </div>
             </div>
 
             <div>
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+                style={{ color: 'white' }}
               >
                 <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                   <UserPlusIcon className="h-5 w-5 text-orange-500 group-hover:text-orange-400" />
@@ -322,10 +537,10 @@ const Signup = () => {
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
+                <div className="w-full border-t border-gray-600" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
+                <span className="px-2 bg-dark-800" style={{ color: 'white' }}>
                   Already have an account?{' '}
                   <Link to="/login" className="font-medium text-orange-600 hover:text-orange-500">
                     Sign in

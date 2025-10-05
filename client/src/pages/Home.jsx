@@ -59,29 +59,29 @@ const Home = () => {
 
   if (!currentUser) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6 text-center">
+      <div className="min-h-screen bg-dark-900 flex flex-col justify-center items-center">
+        <div className="max-w-md w-full bg-dark-800 rounded-lg shadow-md p-6 text-center border border-gray-700">
           <div className="flex justify-center items-center space-x-2 mb-4">
             <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">P2P</span>
+              <span className="text-white font-bold text-sm">S</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">SkillWagers</span>
+            <span className="text-xl font-bold text-white">SkillWagers</span>
             <BetaBadge size="xs" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Welcome to SkillWagers Beta</h2>
-          <p className="text-gray-600 mb-4">
+          <h2 className="text-xl font-semibold text-white mb-2">Welcome to SkillWagers Beta</h2>
+          <p className="text-gray-400 mb-4">
             Please sign in to access your dashboard and start wagering with fake currency.
           </p>
           <div className="space-y-2">
             <Link
-              to="/login"
-              className="block w-full bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 transition-colors"
+              to="/auth"
+              className="block w-full bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700"
             >
               Sign In
             </Link>
             <Link
-              to="/signup"
-              className="block w-full border border-orange-600 text-orange-600 px-4 py-2 rounded-md hover:bg-orange-50 transition-colors"
+              to="/auth"
+              className="block w-full border border-orange-600 text-orange-600 px-4 py-2 rounded-md hover:bg-orange-900 hover:bg-opacity-20"
             >
               Join Beta
             </Link>
@@ -92,19 +92,19 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-dark-900">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-dark-800 shadow-sm border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 flex items-center space-x-3">
+              <h1 className="text-2xl font-bold text-white flex items-center space-x-3">
                 Welcome back, {userProfile?.displayName || currentUser.email?.split('@')[0]}
                 <BetaBadge size="sm" />
               </h1>
-              <p className="text-gray-600 mt-1">Ready to take on some challenges?</p>
+              <p className="text-gray-300 mt-1">Ready to take on some challenges?</p>
             </div>
-            <FakeCurrencyDisplay className="bg-gray-100 px-4 py-2 rounded-lg" />
+            <FakeCurrencyDisplay className="bg-gray-700 px-4 py-2 rounded-lg" />
           </div>
         </div>
       </div>
@@ -113,30 +113,30 @@ const Home = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-dark-800 rounded-lg shadow p-6 border border-gray-700">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Wagers</p>
-                <p className="text-2xl font-bold text-gray-900">{mockStats.totalWagers}</p>
+                <p className="text-sm font-medium text-gray-400">Total Wagers</p>
+                <p className="text-2xl font-bold text-white">{mockStats.totalWagers}</p>
               </div>
               <ChartBarIcon className="h-8 w-8 text-blue-500" />
             </div>
           </div>
           
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-dark-800 rounded-lg shadow p-6 border border-gray-700">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Win Rate</p>
+                <p className="text-sm font-medium text-gray-400">Win Rate</p>
                 <p className="text-2xl font-bold text-green-600">{mockStats.winRate}%</p>
               </div>
               <TrophyIcon className="h-8 w-8 text-yellow-500" />
             </div>
           </div>
           
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-dark-800 rounded-lg shadow p-6 border border-gray-700">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Earnings</p>
+                <p className="text-sm font-medium text-gray-400">Total Earnings</p>
                 <p className="text-2xl font-bold text-green-600">${mockStats.totalEarnings}</p>
                 <p className="text-xs text-gray-500">(FAKE CURRENCY)</p>
               </div>
@@ -144,10 +144,10 @@ const Home = () => {
             </div>
           </div>
           
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-dark-800 rounded-lg shadow p-6 border border-gray-700">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Current Rank</p>
+                <p className="text-sm font-medium text-gray-400">Current Rank</p>
                 <p className="text-2xl font-bold text-orange-600">{mockStats.rank}</p>
               </div>
               <FireIcon className="h-8 w-8 text-orange-500" />
@@ -158,45 +158,45 @@ const Home = () => {
         {/* Quick Actions & Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Quick Actions */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
+          <div className="bg-dark-800 rounded-lg shadow border border-gray-700">
+            <div className="p-6 border-b border-gray-600">
+              <h2 className="text-lg font-semibold text-white">Quick Actions</h2>
             </div>
             <div className="p-6">
               <div className="grid grid-cols-2 gap-4">
                 <Link
                   to="/wagers"
-                  className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-orange-300 hover:bg-orange-50 transition-colors"
+                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300"
                 >
                   <ChartBarIcon className="h-8 w-8 text-blue-500 mb-2" />
-                  <span className="text-sm font-medium text-gray-900">My Wagers</span>
+                  <span className="text-sm font-medium text-white">My Wagers</span>
                   <span className="text-xs text-gray-500">{mockStats.activeWagers} active</span>
                 </Link>
                 
                 <Link
                   to="/create-challenge"
-                  className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-orange-300 hover:bg-orange-50 transition-colors"
+                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300"
                 >
                   <PlusIcon className="h-8 w-8 text-green-500 mb-2" />
-                  <span className="text-sm font-medium text-gray-900">Create Wager</span>
+                  <span className="text-sm font-medium text-white">Create Wager</span>
                   <span className="text-xs text-gray-500">Start earning</span>
                 </Link>
                 
                 <Link
-                  to="/marketplace"
-                  className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-orange-300 hover:bg-orange-50 transition-colors"
+                  to="/wagers"
+                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300"
                 >
                   <ShoppingBagIcon className="h-8 w-8 text-purple-500 mb-2" />
-                  <span className="text-sm font-medium text-gray-900">Marketplace</span>
-                  <span className="text-xs text-gray-500">Browse challenges</span>
+                  <span className="text-sm font-medium text-white">View Challenges</span>
+                  <span className="text-xs text-gray-500">Browse wagers</span>
                 </Link>
                 
                 <Link
                   to="/profile"
-                  className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-orange-300 hover:bg-orange-50 transition-colors"
+                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300"
                 >
                   <UserGroupIcon className="h-8 w-8 text-orange-500 mb-2" />
-                  <span className="text-sm font-medium text-gray-900">Profile</span>
+                  <span className="text-sm font-medium text-white">Profile</span>
                   <span className="text-xs text-gray-500">View progress</span>
                 </Link>
               </div>
@@ -204,9 +204,9 @@ const Home = () => {
           </div>
 
           {/* Recent Activity */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
+          <div className="bg-dark-800 rounded-lg shadow border border-gray-700">
+            <div className="p-6 border-b border-gray-600">
+              <h2 className="text-lg font-semibold text-white">Recent Activity</h2>
             </div>
             <div className="p-6">
               <div className="space-y-4">
@@ -214,11 +214,11 @@ const Home = () => {
                   const IconComponent = activity.icon;
                   return (
                     <div key={activity.id} className="flex items-center space-x-3">
-                      <div className={`p-2 rounded-full bg-gray-100`}>
+                      <div className={`p-2 rounded-full bg-gray-700`}>
                         <IconComponent className={`h-4 w-4 ${activity.color}`} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900">{activity.title}</p>
+                        <p className="text-sm font-medium text-white">{activity.title}</p>
                         <p className="text-xs text-gray-500 flex items-center">
                           <ClockIcon className="h-3 w-3 mr-1" />
                           {activity.time}
@@ -235,7 +235,7 @@ const Home = () => {
                 })}
               </div>
               
-              <div className="mt-6 pt-4 border-t border-gray-200">
+              <div className="mt-6 pt-4 border-t border-gray-600">
                 <Link
                   to="/wagers"
                   className="text-sm text-orange-600 hover:text-orange-500 font-medium"

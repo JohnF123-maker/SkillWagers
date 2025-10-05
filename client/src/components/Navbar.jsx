@@ -31,11 +31,15 @@ const Navbar = () => {
   };
 
   const isActive = (path) => {
+    // For the home button, check both / and /home depending on user status
+    if (path === (currentUser ? '/home' : '/')) {
+      return location.pathname === '/' || location.pathname === '/home';
+    }
     return location.pathname === path;
   };
 
   const navLinks = [
-    { path: '/home', label: 'Home', icon: HomeIcon },
+    { path: currentUser ? '/home' : '/', label: 'Home', icon: HomeIcon },
     { path: '/wagering', label: 'Wagering', icon: CreditCardIcon },
     { path: '/marketplace', label: 'Marketplace', icon: ShoppingBagIcon },
     ...(currentUser ? [
@@ -51,9 +55,6 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">P2P</span>
-            </div>
             <span className="gaming-text text-xl font-bold">
               SkillWagers
             </span>
