@@ -8,9 +8,15 @@ import {
   signOut,
   updateProfile
 } from 'firebase/auth';
-import { getFunctions, httpsCallable } from 'firebase/functions';
-import { auth } from '../firebase';
-import axios from 'axios';
+import { 
+  doc, 
+  getDoc, 
+  setDoc, 
+  updateDoc, 
+  serverTimestamp,
+  increment
+} from 'firebase/firestore';
+import { auth, db } from '../firebase';
 
 const AuthContext = createContext();
 
@@ -28,18 +34,63 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(null);
 
-  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-  const functions = getFunctions();
-  const googleProvider = new GoogleAuthProvider();
+  // Create or update user document in Firestore
+  const createOrUpdateUserDoc = async (user, additionalData = {}) => {
+    if (!user) return null;
 
-  // Setup axios defaults
-  useEffect(() => {
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    const userRef = doc(db, 'users', user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      // Create new user document
+      const userData = {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || additionalData.displayName || '',
+        photoURL: user.photoURL || null,
+        createdAt: serverTimestamp(),
+        lastLoginAt: serverTimestamp(),
+        betaBalance: 100,
+        stats: {
+          wins: 0,
+          losses: 0,
+          totalChallenges: 0
+        },
+        ...additionalData
+      };
+
+      await setDoc(userRef, userData);
+      return userData;
     } else {
-      delete axios.defaults.headers.common['Authorization'];
+      // Update existing user document
+      const updateData = {
+        lastLoginAt: serverTimestamp(),
+        email: user.email,
+        displayName: user.displayName || userSnap.data().displayName,
+        photoURL: user.photoURL !== null ? user.photoURL : userSnap.data().photoURL,
+        ...additionalData
+      };
+
+      await updateDoc(userRef, updateData);
+      return { ...userSnap.data(), ...updateData };
     }
-  }, [token]);
+  };
+
+  // Fetch user profile from Firestore
+  const fetchUserProfile = async (uid) => {
+    try {
+      const userRef = doc(db, 'users', uid);
+      const userSnap = await getDoc(userRef);
+      
+      if (userSnap.exists()) {
+        return userSnap.data();
+      }
+      return null;
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      return null;
+    }
+  };
 
   // Auth state listener
   useEffect(() => {
@@ -48,19 +99,16 @@ export const AuthProvider = ({ children }) => {
       
       if (user) {
         try {
-          // Get Firebase token
-          const idToken = await user.getIdToken();
-          setToken(idToken);
-          
-          // Fetch user profile from backend
-          const response = await axios.get(`${API_BASE_URL}/auth/profile`);
-          setUserProfile(response.data.user);
+          // Create or update user document
+          const userProfile = await createOrUpdateUserDoc(user);
+          setUserProfile(userProfile);
         } catch (error) {
-          console.error('Error fetching user profile:', error);
-          setUserProfile(null);
+          console.error('Error handling user auth state:', error);
+          // Try to fetch existing profile as fallback
+          const profile = await fetchUserProfile(user.uid);
+          setUserProfile(profile);
         }
       } else {
-        setToken(null);
         setUserProfile(null);
       }
       
@@ -68,7 +116,7 @@ export const AuthProvider = ({ children }) => {
     });
 
     return unsubscribe;
-  }, [API_BASE_URL]);
+  }, []);
 
   const login = async (email, password) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -82,59 +130,49 @@ export const AuthProvider = ({ children }) => {
     // Update Firebase profile
     await updateProfile(user, { displayName });
     
-    // Register user in backend
-    const idToken = await user.getIdToken();
-    const response = await axios.post(`${API_BASE_URL}/auth/register`, {
-      uid: user.uid,
-      email: user.email,
-      displayName: displayName,
-      photoURL: user.photoURL,
-      dateOfBirth: dateOfBirth,
+    // Create user document with additional data
+    const userData = await createOrUpdateUserDoc(user, {
+      displayName,
+      dateOfBirth,
       betaUser: true
-    }, {
-      headers: { Authorization: `Bearer ${idToken}` }
     });
     
-    setUserProfile(response.data.user);
+    setUserProfile(userData);
     return user;
   };
 
   const googleSignIn = async () => {
-    const userCredential = await signInWithPopup(auth, googleProvider);
+    const provider = new GoogleAuthProvider();
+    const userCredential = await signInWithPopup(auth, provider);
     const user = userCredential.user;
     
-    // Check if this is a new user (first time signing in with Google)
-    const isNewUser = userCredential.additionalUserInfo?.isNewUser;
+    // Create/update user document in Firestore
+    const userData = await createOrUpdateUserDoc(user, {
+      betaUser: true,
+      provider: 'google'
+    });
     
-    if (isNewUser) {
-      // Register user in backend for new Google users
-      const idToken = await user.getIdToken();
-      const response = await axios.post(`${API_BASE_URL}/auth/register`, {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        betaUser: true,
-        provider: 'google'
-      }, {
-        headers: { Authorization: `Bearer ${idToken}` }
-      });
-      
-      setUserProfile(response.data.user);
-    }
-    
+    setUserProfile(userData);
     return user;
   };
 
   const claimDevFunds = async () => {
     try {
-      const claimDevFundsFunction = httpsCallable(functions, 'claimDevFunds');
-      const result = await claimDevFundsFunction();
+      if (!currentUser) throw new Error('No authenticated user');
+      
+      const userDocRef = doc(db, 'users', currentUser.uid);
+      
+      // Add 100 SIM to user's betaBalance
+      await updateDoc(userDocRef, {
+        betaBalance: increment(100),
+        lastDevFundsClaim: new Date(),
+        'stats.totalFundsClaimed': increment(100)
+      });
       
       // Refresh user profile to get updated balance
       await refreshProfile();
       
-      return result.data;
+      return { success: true, amount: 100 };
     } catch (error) {
       console.error('Error claiming dev funds:', error);
       throw error;
@@ -150,9 +188,18 @@ export const AuthProvider = ({ children }) => {
 
   const updateUserProfile = async (updates) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/auth/profile`, updates);
-      setUserProfile(response.data.user);
-      return response.data.user;
+      if (!currentUser) throw new Error('No authenticated user');
+      
+      const userDocRef = doc(db, 'users', currentUser.uid);
+      await updateDoc(userDocRef, {
+        ...updates,
+        updatedAt: new Date()
+      });
+      
+      // Refresh user profile to get updated data
+      const updatedProfile = await fetchUserProfile(currentUser);
+      setUserProfile(updatedProfile);
+      return updatedProfile;
     } catch (error) {
       console.error('Error updating profile:', error);
       throw error;
@@ -161,17 +208,37 @@ export const AuthProvider = ({ children }) => {
 
   const verifyAge = async (dateOfBirth) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/verify-age`, {
-        dateOfBirth: dateOfBirth
+      if (!currentUser) throw new Error('No authenticated user');
+      
+      // Calculate if user is 18 or older
+      const birthDate = new Date(dateOfBirth);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      
+      const isEighteenOrOlder = age > 18 || (age === 18 && monthDiff > 0) || 
+                               (age === 18 && monthDiff === 0 && today.getDate() >= birthDate.getDate());
+      
+      if (!isEighteenOrOlder) {
+        throw new Error('Must be 18 years or older to use this platform');
+      }
+      
+      // Update user document with age verification
+      const userDocRef = doc(db, 'users', currentUser.uid);
+      await updateDoc(userDocRef, {
+        ageVerified: true,
+        dateOfBirth: dateOfBirth,
+        ageVerifiedAt: new Date()
       });
       
       // Update local profile
       setUserProfile(prev => ({
         ...prev,
-        ageVerified: true
+        ageVerified: true,
+        dateOfBirth: dateOfBirth
       }));
       
-      return response.data;
+      return { success: true, ageVerified: true };
     } catch (error) {
       console.error('Error verifying age:', error);
       throw error;
@@ -180,9 +247,11 @@ export const AuthProvider = ({ children }) => {
 
   const refreshProfile = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/auth/profile`);
-      setUserProfile(response.data.user);
-      return response.data.user;
+      if (!currentUser) throw new Error('No authenticated user');
+      
+      const updatedProfile = await fetchUserProfile(currentUser);
+      setUserProfile(updatedProfile);
+      return updatedProfile;
     } catch (error) {
       console.error('Error refreshing profile:', error);
       throw error;

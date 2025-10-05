@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
 import BetaBadge from '../components/BetaBadge';
@@ -14,11 +14,18 @@ const Login = () => {
   });
   const [errors, setErrors] = useState({});
 
-  const { login, googleSignIn } = useAuth();
+  const { login, googleSignIn, currentUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const from = location.state?.from?.pathname || '/';
+
+  // Redirect authenticated users
+  useEffect(() => {
+    if (currentUser) {
+      navigate(from, { replace: true });
+    }
+  }, [currentUser, navigate, from]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

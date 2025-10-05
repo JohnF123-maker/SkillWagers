@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 import { getAnalytics } from 'firebase/analytics';
 
 const firebaseConfig = {
@@ -21,6 +22,9 @@ export const auth = getAuth(app);
 
 // Initialize Cloud Firestore and get a reference to the service
 export const db = getFirestore(app);
+
+// Initialize Firebase Storage and get a reference to the service
+export const storage = getStorage(app);
 
 // Initialize Analytics (only in production and if measurement ID is available)
 export const analytics = process.env.NODE_ENV === 'production' && process.env.REACT_APP_FIREBASE_MEASUREMENT_ID 

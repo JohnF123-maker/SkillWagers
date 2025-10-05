@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { auth, googleProvider } from '../lib/firebase';
 import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
+import Avatar from './Avatar';
 
 const AuthWidget = () => {
   const [user, setUser] = useState(null);
@@ -46,10 +47,11 @@ const AuthWidget = () => {
 
   return (
     <div className="flex items-center gap-3">
-      <img 
-        src={user.photoURL || '/avatar.svg'} 
+      <Avatar 
+        src={user.photoURL} 
         alt={user.displayName || 'User'} 
-        className="h-8 w-8 rounded-full border border-gray-300" 
+        size="md"
+        fallbackInitials={user.displayName ? user.displayName.charAt(0) : user.email?.charAt(0) || 'U'}
       />
       <span className="text-sm text-gray-300 hidden sm:block">
         {user.displayName || user.email}

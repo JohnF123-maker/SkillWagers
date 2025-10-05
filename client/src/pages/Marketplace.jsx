@@ -127,11 +127,11 @@ const Marketplace = () => {
               </Link>
               
               <Link
-                to="/wagers"
+                to="/wagering"
                 className="flex items-center justify-center space-x-2 bg-white border border-orange-300 rounded-lg p-4 hover:bg-orange-50 transition-colors"
               >
                 <TrophyIcon className="h-5 w-5 text-orange-600" />
-                <span className="text-orange-800 font-medium">Track Wagers</span>
+                <span className="text-orange-800 font-medium">Browse Challenges</span>
               </Link>
             </div>
           </div>

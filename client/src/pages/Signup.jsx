@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
 import BetaBadge from '../components/BetaBadge';
@@ -21,8 +21,15 @@ const Signup = () => {
   // Error state for inline validation
   const [errors, setErrors] = useState({});
 
-  const { register, googleSignIn } = useAuth();
+  const { register, googleSignIn, currentUser } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect authenticated users
+  useEffect(() => {
+    if (currentUser) {
+      navigate('/', { replace: true });
+    }
+  }, [currentUser, navigate]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

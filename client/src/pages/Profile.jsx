@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import Avatar from '../components/Avatar';
+import { 
+  collection, 
+  query, 
+  where, 
+  orderBy, 
+  limit, 
+  getDocs 
+} from 'firebase/firestore';
+import { db } from '../firebase';
 import toast from 'react-hot-toast';
 import {
   TrophyIcon,
@@ -13,7 +22,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 const Profile = () => {
-  const { userProfile, refreshProfile, verifyAge } = useAuth();
+  const { userProfile, currentUser, refreshProfile, verifyAge } = useAuth();
   const [loading, setLoading] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [challenges, setChallenges] = useState([]);
@@ -21,22 +30,50 @@ const Profile = () => {
   const [dateOfBirth, setDateOfBirth] = useState('');
   
   const navigate = useNavigate();
-  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
   useEffect(() => {
-    fetchProfileData();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    if (currentUser && userProfile) {
+      fetchProfileData();
+    }
+  }, [currentUser, userProfile]);
 
   const fetchProfileData = async () => {
     try {
       setLoading(true);
-      const [transactionsRes, challengesRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/payments/transactions?limit=5`),
-        axios.get(`${API_BASE_URL}/challenges/user/${userProfile?.uid}?limit=5`)
+      
+      // Fetch recent transactions
+      const transactionsQuery = query(
+        collection(db, 'transactions'),
+        where('userId', '==', currentUser.uid),
+        orderBy('createdAt', 'desc'),
+        limit(5)
+      );
+      
+      // Fetch user's challenges
+      const challengesQuery = query(
+        collection(db, 'challenges'),
+        where('creatorId', '==', currentUser.uid),
+        orderBy('createdAt', 'desc'),
+        limit(5)
+      );
+      
+      const [transactionsSnapshot, challengesSnapshot] = await Promise.all([
+        getDocs(transactionsQuery),
+        getDocs(challengesQuery)
       ]);
       
-      setTransactions(transactionsRes.data.transactions || []);
-      setChallenges(challengesRes.data.challenges || []);
+      const transactionsData = transactionsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+      const challengesData = challengesSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+      setTransactions(transactionsData);
+      setChallenges(challengesData);
     } catch (error) {
       console.error('Error fetching profile data:', error);
       toast.error('Failed to load profile data');
@@ -129,10 +166,12 @@ const Profile = () => {
         {/* Profile Header */}
         <div className="card-gradient mb-8">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-            <img
-              src={userProfile.photoURL || 'https://via.placeholder.com/120'}
+            <Avatar
+              src={userProfile.photoURL}
               alt="Profile"
-              className="w-24 h-24 rounded-full border-4 border-primary-500"
+              size="2xl"
+              className="border-4 border-primary-500"
+              fallbackInitials={userProfile.displayName ? userProfile.displayName.charAt(0) : userProfile.email?.charAt(0) || 'U'}
             />
             
             <div className="flex-1">
