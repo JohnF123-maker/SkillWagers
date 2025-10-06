@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import BetaBadge from './BetaBadge';
 import FakeCurrencyDisplay from './FakeCurrencyDisplay';
@@ -16,19 +16,9 @@ import {
 } from '@heroicons/react/24/outline';
 
 const Navbar = () => {
-  const { currentUser, userProfile, logout } = useAuth();
+  const { currentUser, userProfile } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
 
   const isActive = (path) => {
     // For the home button, check both / and /home depending on user status

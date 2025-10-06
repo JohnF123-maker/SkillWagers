@@ -1,8 +1,26 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import Avatar from '../components/Avatar';
+import BetaBadge from '../components/BetaBadge';
+import FakeCurrencyDisplay from '../components/FakeCurrencyDisplay';
 import DailyCoinsReward from '../components/DailyCoinsReward';
+import DisplayNameOnceForm from '../components/Profile/DisplayNameOnceForm';
+import ChangePasswordWithEmail from '../components/Profile/ChangePasswordWithEmail';
+import ProfilePictureUploader from '../components/Profile/ProfilePictureUploader';
+import SignOutConfirm from '../components/Profile/SignOutConfirm';
+import DailyCoinsCard from '../components/Profile/DailyCoinsCard';
+import {
+  TrophyIcon,
+  CurrencyDollarIcon,
+  UserIcon,
+  ChartBarIcon,
+  PlusIcon,
+  ShoppingBagIcon,
+  UserGroupIcon,
+  ClockIcon,
+  FireIcon
+} from '@heroicons/react/24/outline';
 import { 
   collection, 
   query, 
@@ -10,703 +28,470 @@ import {
   orderBy, 
   limit, 
   getDocs,
-  doc,
-  updateDoc,
-  serverTimestamp 
+  or
 } from 'firebase/firestore';
-import { 
-  ref, 
-  uploadBytes, 
-  getDownloadURL 
-} from 'firebase/storage';
-import { 
-  sendPasswordResetEmail 
-} from 'firebase/auth';
-import { db, storage, auth } from '../firebase';
-import toast from 'react-hot-toast';
-import {
-  TrophyIcon,
-  CurrencyDollarIcon,
-  UserIcon,
-  ChartBarIcon,
-  CalendarIcon,
-  StarIcon,
-  PencilIcon,
-  PhotoIcon,
-  KeyIcon,
-  ArrowRightOnRectangleIcon
-} from '@heroicons/react/24/outline';
+import { db } from '../firebase';
 
 const Profile = () => {
-  const { userProfile, currentUser, refreshProfile, verifyAge, logout } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [transactions, setTransactions] = useState([]);
-  const [challenges, setChallenges] = useState([]);
-  const [showAgeVerification, setShowAgeVerification] = useState(false);
+  const { userProfile, currentUser, refreshProfile } = useAuth();
+  const [authLoading, setAuthLoading] = useState(true);
+  const [profileData, setProfileData] = useState({
+    totalChallenges: 0,
+    wins: 0,
+    losses: 0,
+    winRate: 0,
+    activeWagers: 0,
+    completedWagers: 0,
+    totalEarnings: 0,
+    rank: 'Unranked'
+  });
+  const [recentActivity, setRecentActivity] = useState([]);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
-  const [showEditProfile, setShowEditProfile] = useState(false);
-  const [dateOfBirth, setDateOfBirth] = useState('');
-  const [editDisplayName, setEditDisplayName] = useState('');
-  const [displayNameChanged, setDisplayNameChanged] = useState(false);
-  const [profilePicture, setProfilePicture] = useState(null);
-  const [profilePicturePreview, setProfilePicturePreview] = useState('');
-  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
-  
   const navigate = useNavigate();
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setAuthLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [currentUser]);
+
+  useEffect(() => {
     if (currentUser && userProfile) {
-      fetchProfileData();
-      setEditDisplayName(userProfile.displayName || '');
-      // Check if display name has been changed before
-      setDisplayNameChanged(userProfile.displayNameChanged || false);
+      fetchUserStats();
+      fetchRecentActivity();
     }
   }, [currentUser, userProfile]);
 
-  const fetchProfileData = async () => {
+  const fetchUserStats = async () => {
     try {
-      setLoading(true);
-      
-      // Fetch recent transactions
-      const transactionsQuery = query(
-        collection(db, 'transactions'),
-        where('userId', '==', currentUser.uid),
-        orderBy('createdAt', 'desc'),
-        limit(5)
-      );
-      
-      // Fetch user's challenges
-      const challengesQuery = query(
+      // Get user's challenges (created or participated)
+      const q = query(
         collection(db, 'challenges'),
-        where('creatorId', '==', currentUser.uid),
+        or(
+          where('createdBy', '==', currentUser.uid),
+          where('acceptedBy', '==', currentUser.uid)
+        )
+      );
+
+      const querySnapshot = await getDocs(q);
+      const challenges = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      // Calculate statistics
+      const totalChallenges = challenges.length;
+      const activeWagers = challenges.filter(c => ['open', 'pending_proof', 'disputed'].includes(c.status)).length;
+      const completedWagers = challenges.filter(c => ['won', 'lost', 'completed'].includes(c.status)).length;
+      
+      const wonChallenges = challenges.filter(c => {
+        if (c.status === 'completed' || c.status === 'won') {
+          // User won if they were creator and winner is creator, or participant and winner is participant
+          return (c.createdBy === currentUser.uid && c.winner === c.createdBy) ||
+                 (c.acceptedBy === currentUser.uid && c.winner === c.acceptedBy);
+        }
+        return false;
+      });
+
+      const winRate = completedWagers > 0 ? (wonChallenges.length / completedWagers * 100) : 0;
+      const totalEarnings = wonChallenges.reduce((sum, challenge) => sum + (challenge.wagerAmount || 0), 0);
+      
+      // Simple ranking system based on total earnings
+      let rank = 'Unranked';
+      if (totalEarnings >= 500) rank = 'Gold';
+      else if (totalEarnings >= 200) rank = 'Silver';
+      else if (totalEarnings >= 50) rank = 'Bronze';
+
+      setProfileData({
+        totalChallenges,
+        wins: wonChallenges.length,
+        losses: completedWagers - wonChallenges.length,
+        winRate: Math.round(winRate * 10) / 10,
+        activeWagers,
+        completedWagers,
+        totalEarnings,
+        rank
+      });
+    } catch (error) {
+      console.error('Error fetching user stats:', error);
+    }
+  };
+
+  const fetchRecentActivity = async () => {
+    try {
+      const challengesRef = collection(db, 'challenges');
+      const recentQuery = query(
+        challengesRef,
+        where('participants', 'array-contains', currentUser.uid),
         orderBy('createdAt', 'desc'),
         limit(5)
       );
-      
-      const [transactionsSnapshot, challengesSnapshot] = await Promise.all([
-        getDocs(transactionsQuery),
-        getDocs(challengesQuery)
-      ]);
-      
-      const transactionsData = transactionsSnapshot.docs.map(doc => ({
+
+      const snapshot = await getDocs(recentQuery);
+      const activities = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
-      
-      const challengesData = challengesSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      
-      setTransactions(transactionsData);
-      setChallenges(challengesData);
-    } catch (error) {
-      console.error('Error fetching profile data:', error);
-      toast.error('Failed to load profile data');
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const handleAgeVerification = async (e) => {
-    e.preventDefault();
-    
-    if (!dateOfBirth) {
-      toast.error('Please enter your date of birth');
-      return;
-    }
-
-    try {
-      setLoading(true);
-      await verifyAge(dateOfBirth);
-      toast.success('Age verification successful!');
-      setShowAgeVerification(false);
-      await refreshProfile();
-    } catch (error) {
-      console.error('Age verification error:', error);
-      toast.error(error.response?.data?.message || 'Age verification failed');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // --- NEW PROFILE EDITING FUNCTIONALITY (Oct 2025) ---
-  const handleDisplayNameUpdate = async (e) => {
-    e.preventDefault();
-    
-    if (!editDisplayName.trim()) {
-      toast.error('Display name cannot be empty');
-      return;
-    }
-
-    if (displayNameChanged) {
-      toast.error('Display name can only be changed once');
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const userRef = doc(db, 'users', currentUser.uid);
-      await updateDoc(userRef, {
-        displayName: editDisplayName.trim(),
-        displayNameChanged: true,
-        updatedAt: serverTimestamp()
-      });
-      
-      toast.success('Display name updated successfully!');
-      setShowEditProfile(false);
-      setDisplayNameChanged(true);
-      await refreshProfile();
-    } catch (error) {
-      console.error('Error updating display name:', error);
-      toast.error('Failed to update display name');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handlePasswordReset = async () => {
-    try {
-      await sendPasswordResetEmail(auth, currentUser.email);
-      toast.success('Password reset email sent! Check your inbox.');
-    } catch (error) {
-      console.error('Error sending password reset email:', error);
-      toast.error('Failed to send password reset email');
-    }
-  };
-
-  const handleProfilePictureChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Validate file size (max 2MB)
-      if (file.size > 2 * 1024 * 1024) {
-        toast.error('File size must be less than 2MB');
-        return;
+      // If no real data, use placeholder data
+      if (activities.length === 0) {
+        setRecentActivity([
+          {
+            id: 1,
+            type: 'wager_won',
+            title: 'Push-up Challenge Won',
+            amount: '+$25.00',
+            time: '2 hours ago',
+            icon: TrophyIcon,
+            color: 'text-green-500'
+          },
+          {
+            id: 2,
+            type: 'wager_created',
+            title: 'Running Challenge Created',
+            amount: '-$15.00',
+            time: '1 day ago',
+            icon: PlusIcon,
+            color: 'text-blue-500'
+          },
+          {
+            id: 3,
+            type: 'wager_joined',
+            title: 'Meditation Challenge Joined',
+            amount: '-$10.00',
+            time: '2 days ago',
+            icon: UserGroupIcon,
+            color: 'text-purple-500'
+          }
+        ]);
+      } else {
+        setRecentActivity(activities);
       }
-
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        toast.error('Please select an image file');
-        return;
-      }
-
-      setProfilePicture(file);
-      
-      // Create preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setProfilePicturePreview(e.target.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleProfilePictureUpload = async () => {
-    if (!profilePicture) return;
-
-    try {
-      setIsUploadingPhoto(true);
-      
-      // Upload to Firebase Storage
-      const imageRef = ref(storage, `avatars/${currentUser.uid}/${profilePicture.name}`);
-      await uploadBytes(imageRef, profilePicture);
-      const downloadURL = await getDownloadURL(imageRef);
-      
-      // Update user profile
-      const userRef = doc(db, 'users', currentUser.uid);
-      await updateDoc(userRef, {
-        photoURL: downloadURL,
-        updatedAt: serverTimestamp()
-      });
-      
-      toast.success('Profile picture updated successfully!');
-      setProfilePicture(null);
-      setProfilePicturePreview('');
-      await refreshProfile();
     } catch (error) {
-      console.error('Error uploading profile picture:', error);
-      toast.error('Failed to upload profile picture');
-    } finally {
-      setIsUploadingPhoto(false);
+      console.error('Error fetching recent activity:', error);
     }
   };
 
-  const handleSignOut = async () => {
-    try {
-      await logout();
-      navigate('/');
-      toast.success('Signed out successfully');
-    } catch (error) {
-      console.error('Sign out error:', error);
-      toast.error('Failed to sign out');
-    }
-  };
-
-  const getStatusBadge = (status) => {
-    const badges = {
-      'open': 'status-pending',
-      'accepted': 'status-active',
-      'completed': 'status-completed',
-      'disputed': 'status-disputed',
-      'cancelled': 'bg-gray-500 bg-opacity-20 text-gray-400'
-    };
-    return badges[status] || 'status-pending';
-  };
-
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  const stats = [
-    {
-      label: 'Total Challenges',
-      value: userProfile?.totalChallenges || 0,
-      icon: TrophyIcon,
-      color: 'text-orange-400'
-    },
-    {
-      label: 'Wins',
-      value: userProfile?.totalWins || 0,
-      icon: StarIcon,
-      color: 'text-green-400'
-    },
-    {
-      label: 'Win Rate',
-      value: userProfile?.totalChallenges > 0 
-        ? `${((userProfile.totalWins / userProfile.totalChallenges) * 100).toFixed(1)}%`
-        : '0%',
-      icon: ChartBarIcon,
-      color: 'text-blue-400'
-    },
-    {
-      label: 'Total Earnings',
-      value: `$${(userProfile?.totalEarnings || 0).toFixed(2)}`,
-      icon: CurrencyDollarIcon,
-      color: 'text-green-400'
-    }
-  ];
-
-  if (!userProfile) {
+  if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-white text-xl">Loading profile...</div>
       </div>
     );
   }
 
+  if (!currentUser) {
+    navigate('/login');
+    return null;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-900 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Profile Header */}
-        <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 mb-8">
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-            <div className="relative">
-              <Avatar
-                src={profilePicturePreview || userProfile.photoURL}
-                alt="Profile"
-                size="2xl"
-                className="border-4 border-orange-500"
-                fallbackInitials={userProfile.displayName ? userProfile.displayName.charAt(0) : userProfile.email?.charAt(0) || 'U'}
-              />
-              <button
-                onClick={() => document.getElementById('profilePictureInput').click()}
-                className="absolute bottom-0 right-0 bg-orange-600 text-white p-2 rounded-full hover:bg-orange-700 transition-colors"
-              >
-                <PhotoIcon className="w-4 h-4" />
-              </button>
-              <input
-                id="profilePictureInput"
-                type="file"
-                accept="image/*"
-                onChange={handleProfilePictureChange}
-                className="hidden"
-              />
+    <div className="min-h-screen bg-gray-900 text-white">
+      {/* Dashboard Header */}
+      <div className="bg-gray-800 shadow-sm border-b border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-white flex items-center space-x-3">
+                Welcome back, {userProfile?.displayName || currentUser.email?.split('@')[0]}
+                <BetaBadge size="sm" />
+              </h1>
+              <p className="text-gray-300 mt-1">Ready to take on some challenges?</p>
             </div>
-            
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-3xl font-bold text-white">
-                  {userProfile.displayName}
-                </h1>
-                <button
-                  onClick={() => setShowEditProfile(true)}
-                  className="text-orange-400 hover:text-orange-300 p-1"
-                  disabled={displayNameChanged}
-                  title={displayNameChanged ? "Display name can only be changed once" : "Edit profile"}
-                >
-                  <PencilIcon className="w-5 h-5" />
-                </button>
-              </div>
-              <p className="text-gray-300 mb-4">{userProfile.email}</p>
-              
-              <div className="flex flex-wrap gap-4">
-                <div className="flex items-center space-x-2">
-                  <UserIcon className="w-5 h-5 text-orange-400" />
-                  <span className="text-sm text-gray-300">
-                    Rating: <span className="text-white font-semibold">{userProfile.rating || 1000}</span>
-                  </span>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <CalendarIcon className="w-5 h-5 text-orange-400" />
-                  <span className="text-sm text-gray-300">
-                    Joined: {formatDate(userProfile.createdAt)}
-                  </span>
-                </div>
-                
-                <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  userProfile.ageVerified ? 'bg-green-900 text-green-300' : 'bg-yellow-900 text-yellow-300'
-                }`}>
-                  {userProfile.ageVerified ? 'Age Verified' : 'Age Verification Required'}
-                </div>
-                
-                <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  userProfile.status === 'active' ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'
-                }`}>
-                  {userProfile.status}
-                </div>
-              </div>
-
-              {/* Profile Picture Upload Section */}
-              {profilePicture && (
-                <div className="mt-4 p-4 bg-gray-700 rounded-lg">
-                  <div className="flex items-center gap-4">
-                    <img 
-                      src={profilePicturePreview} 
-                      alt="Preview" 
-                      className="w-16 h-16 rounded-full object-cover"
-                    />
-                    <div className="flex-1">
-                      <p className="text-white font-medium">New profile picture ready</p>
-                      <p className="text-gray-400 text-sm">File: {profilePicture.name}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={handleProfilePictureUpload}
-                        disabled={isUploadingPhoto}
-                        className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 disabled:opacity-50"
-                      >
-                        {isUploadingPhoto ? 'Uploading...' : 'Upload'}
-                      </button>
-                      <button
-                        onClick={() => {
-                          setProfilePicture(null);
-                          setProfilePicturePreview('');
-                        }}
-                        className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Profile Actions */}
-              <div className="flex gap-3 mt-4">
-                <button
-                  onClick={handlePasswordReset}
-                  className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <KeyIcon className="w-4 h-4" />
-                  Reset Password
-                </button>
-              </div>
-            </div>
-            
-            <div className="text-right">
-              <div className="text-2xl font-bold text-orange-400 mb-1">
-                ${userProfile.balance?.toFixed(2) || '0.00'} SIM
-              </div>
-              <p className="text-sm text-gray-400">Available Balance</p>
-              <button
-                onClick={() => navigate('/wallet')}
-                className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors mt-2"
-              >
-                Manage Wallet
-              </button>
-            </div>
+            <FakeCurrencyDisplay className="bg-gray-700 px-4 py-2 rounded-lg" />
           </div>
         </div>
+      </div>
 
+      {/* Dashboard Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Daily Coins Reward */}
         <DailyCoinsReward />
-
-        {/* Age Verification Alert */}
-        {!userProfile.ageVerified && (
-          <div className="bg-yellow-900 bg-opacity-50 border border-yellow-600 rounded-lg p-4 mb-8">
-            <div className="flex items-start">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
+        
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-gray-800 rounded-lg shadow p-6 border border-gray-700">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-400">Total Wagers</p>
+                <p className="text-2xl font-bold text-white">{profileData.totalChallenges}</p>
               </div>
-              <div className="ml-3 flex-1">
-                <h3 className="text-sm font-medium text-yellow-400">
-                  Age Verification Required
-                </h3>
-                <div className="mt-2 text-sm text-yellow-300">
-                  <p>
-                    To participate in challenges with real money stakes, you must verify that you are 18 years or older.
-                  </p>
-                </div>
-                <div className="mt-4">
-                  <button
-                    onClick={() => setShowAgeVerification(true)}
-                    className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors"
-                  >
-                    Verify Age
-                  </button>
-                </div>
-              </div>
+              <ChartBarIcon className="h-8 w-8 text-blue-500" />
             </div>
           </div>
-        )}
-
-        {/* Statistics */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, index) => (
-            <div key={index} className="bg-gray-800 rounded-xl p-6 border border-gray-700 text-center">
-              <stat.icon className={`w-8 h-8 ${stat.color} mx-auto mb-3`} />
-              <div className="text-2xl font-bold text-white mb-1">
-                {stat.value}
+          
+          <div className="bg-gray-800 rounded-lg shadow p-6 border border-gray-700">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-400">Win Rate</p>
+                <p className="text-2xl font-bold text-green-600">{profileData.winRate}%</p>
               </div>
-              <div className="text-sm text-gray-400">
-                {stat.label}
-              </div>
+              <TrophyIcon className="h-8 w-8 text-yellow-500" />
             </div>
-          ))}
-        </div>
-
-        {/* Recent Activity */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-8">
-          {/* Recent Transactions */}
-          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-            <h2 className="text-xl font-bold text-white mb-4">Recent Transactions</h2>
-            
-            {loading ? (
-              <div className="animate-pulse space-y-3">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="h-4 bg-gray-700 rounded"></div>
-                ))}
-              </div>
-            ) : transactions.length > 0 ? (
-              <div className="space-y-3">
-                {transactions.map((transaction, index) => (
-                  <div key={index} className="flex justify-between items-center p-3 bg-gray-700 rounded-lg">
-                    <div>
-                      <div className="font-medium text-white capitalize">
-                        {transaction.type}
-                      </div>
-                      <div className="text-sm text-gray-400">
-                        {formatDate(transaction.createdAt)}
-                      </div>
-                    </div>
-                    <div className={`font-semibold ${
-                      transaction.type === 'deposit' || transaction.type === 'challenge_win'
-                        ? 'text-green-400'
-                        : 'text-gray-300'
-                    }`}>
-                      {transaction.type === 'deposit' || transaction.type === 'challenge_win' ? '+' : '-'}
-                      ${transaction.amount.toFixed(2)}
-                    </div>
-                  </div>
-                ))}
-                <button
-                  onClick={() => navigate('/wallet')}
-                  className="w-full text-center text-orange-400 hover:text-orange-300 text-sm mt-3"
-                >
-                  View All Transactions
-                </button>
-              </div>
-            ) : (
-              <p className="text-gray-400 text-center py-8">No transactions yet</p>
-            )}
           </div>
-
-          {/* Recent Challenges */}
-          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-            <h2 className="text-xl font-bold text-white mb-4">Recent Challenges</h2>
-            
-            {loading ? (
-              <div className="animate-pulse space-y-3">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="h-4 bg-gray-700 rounded"></div>
-                ))}
+          
+          <div className="bg-gray-800 rounded-lg shadow p-6 border border-gray-700">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-400">Total Earnings</p>
+                <p className="text-2xl font-bold text-green-600">{profileData.totalEarnings} SIM</p>
+                <p className="text-xs text-gray-500">(FAKE CURRENCY)</p>
               </div>
-            ) : challenges.length > 0 ? (
-              <div className="space-y-3">
-                {challenges.map((challenge, index) => (
-                  <div key={index} className="p-3 bg-gray-700 rounded-lg">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="font-medium text-white">
-                        {challenge.game} - {challenge.gameMode}
-                      </div>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(challenge.status)}`}>
-                        {challenge.status}
-                      </span>
-                    </div>
-                    <div className="text-sm text-gray-400 mb-1">
-                      Stake: ${challenge.stake}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {formatDate(challenge.createdAt)}
-                    </div>
-                  </div>
-                ))}
-                <button
-                  onClick={() => navigate('/marketplace')}
-                  className="w-full text-center text-orange-400 hover:text-orange-300 text-sm mt-3"
-                >
-                  View All Challenges
-                </button>
+              <CurrencyDollarIcon className="h-8 w-8 text-green-500" />
+            </div>
+          </div>
+          
+          <div className="bg-gray-800 rounded-lg shadow p-6 border border-gray-700">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-400">Current Rank</p>
+                <p className="text-2xl font-bold text-orange-600">{profileData.rank}</p>
               </div>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-gray-400 mb-4">No challenges yet</p>
-                <button
-                  onClick={() => navigate('/create-challenge')}
-                  className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors"
-                >
-                  Create Your First Challenge
-                </button>
-              </div>
-            )}
+              <FireIcon className="h-8 w-8 text-orange-500" />
+            </div>
           </div>
         </div>
 
-        {/* Sign Out Section */}
-        <div className="text-center">
-          <button
-            onClick={() => setShowSignOutModal(true)}
-            className="bg-red-600 text-white font-bold px-8 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 mx-auto"
-          >
-            <ArrowRightOnRectangleIcon className="w-5 h-5" />
-            Sign Out
-          </button>
-        </div>
-
-        {/* Age Verification Modal */}
-        {showAgeVerification && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 max-w-md w-full m-4">
-              <h3 className="text-xl font-bold text-white mb-4">Age Verification</h3>
-              
-              <form onSubmit={handleAgeVerification}>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Date of Birth
-                  </label>
-                  <input
-                    type="date"
-                    value={dateOfBirth}
-                    onChange={(e) => setDateOfBirth(e.target.value)}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    required
-                  />
-                  <p className="text-xs text-gray-400 mt-1">
-                    You must be 18 years or older to use this platform
-                  </p>
-                </div>
+        {/* Quick Actions & Recent Activity */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          {/* Quick Actions */}
+          <div className="bg-gray-800 rounded-lg shadow border border-gray-700">
+            <div className="p-6 border-b border-gray-600">
+              <h2 className="text-lg font-semibold text-white">Quick Actions</h2>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-2 gap-4">
+                <Link
+                  to="/wagers"
+                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300 transition-colors"
+                >
+                  <ChartBarIcon className="h-8 w-8 text-blue-500 mb-2" />
+                  <span className="text-sm font-medium text-white">My Wagers</span>
+                  <span className="text-xs text-gray-500">{profileData.activeWagers} active</span>
+                </Link>
                 
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setShowAgeVerification(false)}
-                    className="flex-1 px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
-                    disabled={loading}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
-                    disabled={loading}
-                  >
-                    {loading ? 'Verifying...' : 'Verify Age'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* Edit Profile Modal */}
-        {showEditProfile && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 max-w-md w-full m-4">
-              <h3 className="text-xl font-bold text-white mb-4">Edit Profile</h3>
-              
-              <form onSubmit={handleDisplayNameUpdate}>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Display Name
-                  </label>
-                  <input
-                    type="text"
-                    value={editDisplayName}
-                    onChange={(e) => setEditDisplayName(e.target.value)}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    required
-                    disabled={displayNameChanged}
-                  />
-                  {displayNameChanged && (
-                    <p className="text-xs text-yellow-400 mt-1">
-                      Display name can only be changed once
-                    </p>
-                  )}
-                </div>
+                <Link
+                  to="/create-challenge"
+                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300 transition-colors"
+                >
+                  <PlusIcon className="h-8 w-8 text-green-500 mb-2" />
+                  <span className="text-sm font-medium text-white">Create Wager</span>
+                  <span className="text-xs text-gray-500">Start earning</span>
+                </Link>
                 
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setShowEditProfile(false)}
-                    className="flex-1 px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50"
-                    disabled={loading || displayNameChanged}
-                  >
-                    {loading ? 'Updating...' : 'Update'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* Sign Out Confirmation Modal */}
-        {showSignOutModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 max-w-md w-full m-4">
-              <h3 className="text-xl font-bold text-white mb-4">Confirm Sign Out</h3>
-              <p className="text-gray-300 mb-6">Are you sure you want to sign out?</p>
-              
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowSignOutModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
+                <Link
+                  to="/wagering"
+                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300 transition-colors"
                 >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSignOut}
-                  className="flex-1 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors"
+                  <ShoppingBagIcon className="h-8 w-8 text-purple-500 mb-2" />
+                  <span className="text-sm font-medium text-white">View Challenges</span>
+                  <span className="text-xs text-gray-500">Browse wagers</span>
+                </Link>
+                
+                <Link
+                  to="/wallet"
+                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300 transition-colors"
                 >
-                  Yes, Sign Out
-                </button>
+                  <UserGroupIcon className="h-8 w-8 text-orange-500 mb-2" />
+                  <span className="text-sm font-medium text-white">Wallet</span>
+                  <span className="text-xs text-gray-500">Manage funds</span>
+                </Link>
               </div>
             </div>
           </div>
-        )}
+
+          {/* Recent Activity */}
+          <div className="bg-gray-800 rounded-lg shadow border border-gray-700">
+            <div className="p-6 border-b border-gray-600">
+              <h2 className="text-lg font-semibold text-white">Recent Activity</h2>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                {recentActivity.map((activity) => {
+                  const IconComponent = activity.icon;
+                  return (
+                    <div key={activity.id} className="flex items-center space-x-3">
+                      <div className={`p-2 rounded-full bg-gray-700`}>
+                        <IconComponent className={`h-4 w-4 ${activity.color}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-white">{activity.title}</p>
+                        <p className="text-xs text-gray-500 flex items-center">
+                          <ClockIcon className="h-3 w-3 mr-1" />
+                          {activity.time}
+                        </p>
+                      </div>
+                      <div className="text-sm font-semibold">
+                        <span className={activity.amount.startsWith('+') ? 'text-green-600' : 'text-red-600'}>
+                          {activity.amount}
+                        </span>
+                        <div className="text-xs text-gray-500">(FAKE)</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              
+              <div className="mt-6 pt-4 border-t border-gray-600">
+                <Link
+                  to="/wagers"
+                  className="text-sm text-orange-600 hover:text-orange-500 font-medium"
+                >
+                  View all activity →
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Beta Notice */}
+        <div className="bg-orange-900 bg-opacity-30 border border-orange-600 rounded-lg p-6 mb-8">
+          <div className="flex items-center space-x-2 mb-2">
+            <BetaBadge size="sm" />
+            <h3 className="text-lg font-semibold text-orange-300">Beta Testing Mode</h3>
+          </div>
+          <p className="text-sm text-orange-200">
+            You're using SkillWagers Beta with fake currency for testing purposes. All wagers, earnings, and statistics are simulated. 
+            Help us improve by reporting any issues you encounter!
+          </p>
+        </div>
       </div>
+
+      {/* Profile Management Section */}
+      <div className="container mx-auto px-4 py-8">
+        {/* Profile Header */}
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold mb-2">Profile Settings</h2>
+          <p className="text-gray-400">Manage your account and preferences</p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - Profile Info */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Profile Picture */}
+            <div className="bg-gray-800 rounded-lg p-6">
+              <h2 className="text-xl font-semibold mb-4">Profile Picture</h2>
+              <ProfilePictureUploader />
+            </div>
+
+            {/* Display Name */}
+            <div className="bg-gray-800 rounded-lg p-6">
+              <h2 className="text-xl font-semibold mb-4">Display Name</h2>
+              <DisplayNameOnceForm />
+            </div>
+
+            {/* Daily Coins */}
+            <div className="bg-gray-800 rounded-lg p-6">
+              <h2 className="text-xl font-semibold mb-4">Daily Reward</h2>
+              <DailyCoinsCard />
+            </div>
+
+            {/* Account Actions */}
+            <div className="bg-gray-800 rounded-lg p-6">
+              <h2 className="text-xl font-semibold mb-4">Account</h2>
+              <div className="space-y-4">
+                <ChangePasswordWithEmail />
+                <button
+                  onClick={() => setShowSignOutModal(true)}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg transition duration-200"
+                >
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Stats and Activity */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-gray-800 rounded-lg p-6">
+                <div className="flex items-center">
+                  <TrophyIcon className="h-8 w-8 text-yellow-500 mr-3" />
+                  <div>
+                    <p className="text-sm text-gray-400">Challenges</p>
+                    <p className="text-2xl font-bold">{profileData.totalChallenges}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-800 rounded-lg p-6">
+                <div className="flex items-center">
+                  <ChartBarIcon className="h-8 w-8 text-green-500 mr-3" />
+                  <div>
+                    <p className="text-sm text-gray-400">Wins</p>
+                    <p className="text-2xl font-bold text-green-500">{profileData.wins}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-800 rounded-lg p-6">
+                <div className="flex items-center">
+                  <ChartBarIcon className="h-8 w-8 text-red-500 mr-3" />
+                  <div>
+                    <p className="text-sm text-gray-400">Losses</p>
+                    <p className="text-2xl font-bold text-red-500">{profileData.losses}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-800 rounded-lg p-6">
+                <div className="flex items-center">
+                  <UserIcon className="h-8 w-8 text-blue-500 mr-3" />
+                  <div>
+                    <p className="text-sm text-gray-400">Win Rate</p>
+                    <p className="text-2xl font-bold text-blue-500">{profileData.winRate.toFixed(1)}%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Balance Card */}
+            <div className="bg-gray-800 rounded-lg p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <CurrencyDollarIcon className="h-8 w-8 text-green-500 mr-3" />
+                  <div>
+                    <p className="text-sm text-gray-400">Current Balance</p>
+                    <p className="text-3xl font-bold text-green-500">
+                      ${userProfile?.balance?.toLocaleString() || '0'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Activity */}
+            <div className="bg-gray-800 rounded-lg p-6">
+              <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
+              {recentActivity.length > 0 ? (
+                <div className="space-y-3">
+                  {recentActivity.map((activity) => (
+                    <div key={activity.id} className="border-l-4 border-blue-500 pl-4 py-2">
+                      <h3 className="font-medium">{activity.title}</h3>
+                      <p className="text-sm text-gray-400">
+                        Status: <span className="capitalize">{activity.status}</span>
+                      </p>
+                      <p className="text-sm text-gray-400">
+                        Stake: ${activity.stake}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-400">No recent activity</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Sign Out Modal */}
+      {showSignOutModal && (
+        <SignOutConfirm onClose={() => setShowSignOutModal(false)} />
+      )}
     </div>
   );
 };
