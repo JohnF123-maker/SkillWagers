@@ -4,7 +4,8 @@ import {
   MagnifyingGlassIcon, 
   ClockIcon,
   TrophyIcon,
-  CurrencyDollarIcon
+  CurrencyDollarIcon,
+  PlusIcon
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../components/AuthContext';
 import { 
@@ -72,9 +73,9 @@ const Wagering = () => {
 
   const getSkillLevelBadge = (level) => {
     const colors = {
-      'beginner': 'bg-green-100 text-green-800',
-      'intermediate': 'bg-yellow-100 text-yellow-800',
-      'advanced': 'bg-red-100 text-red-800'
+      'beginner': 'bg-green-900 bg-opacity-30 text-green-300 border border-green-600',
+      'intermediate': 'bg-yellow-900 bg-opacity-30 text-yellow-300 border border-yellow-600',
+      'advanced': 'bg-red-900 bg-opacity-30 text-red-300 border border-red-600'
     };
     return `${colors[level] || colors.beginner} px-2 py-1 rounded-full text-xs font-medium`;
   };
@@ -107,138 +108,151 @@ const Wagering = () => {
   });
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Available Challenges</h1>
-        <p className="text-gray-600">
-          Browse and join skill-based challenges. Test your abilities and compete with others!
-        </p>
-      </div>
-
-      {/* Search and Filters */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-        <div className="flex flex-col lg:flex-row gap-4">
-          <div className="flex-1">
-            <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search challenges..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-4">
-            <select
-              value={filters.category}
-              onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="all">All Categories</option>
-              <option value="gaming">Gaming</option>
-              <option value="trivia">Trivia</option>
-              <option value="sports">Sports Knowledge</option>
-              <option value="puzzle">Puzzle Solving</option>
-              <option value="creative">Creative</option>
-            </select>
-
-            <select
-              value={filters.skillLevel}
-              onChange={(e) => setFilters(prev => ({ ...prev, skillLevel: e.target.value }))}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="all">All Skill Levels</option>
-              <option value="beginner">Beginner</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
-            </select>
-
-            <select
-              value={filters.wagerRange}
-              onChange={(e) => setFilters(prev => ({ ...prev, wagerRange: e.target.value }))}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="all">All Wager Amounts</option>
-              <option value="low">1-10 SIM</option>
-              <option value="medium">11-50 SIM</option>
-              <option value="high">50+ SIM</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Challenge Grid */}
-      <div className="space-y-6">
-        {loading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading challenges...</p>
-          </div>
-        ) : filteredChallenges.length === 0 ? (
-          <div className="text-center py-12">
-            <TrophyIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No challenges found</h3>
-            <p className="text-gray-600 mb-6">
-              {searchTerm || filters.category !== 'all' || filters.skillLevel !== 'all' || filters.wagerRange !== 'all'
-                ? 'Try adjusting your search or filters.'
-                : 'No challenges are currently available. Check back later!'}
+    <main className="min-h-screen bg-gray-900 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">Available Challenges</h1>
+            <p className="text-gray-400">
+              Browse and join skill-based challenges. Test your abilities and compete with others!
             </p>
+          </div>
+          {currentUser && (
             <Link
               to="/create-challenge"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700"
             >
-              Create the First Challenge
+              <PlusIcon className="h-4 w-4 mr-2" />
+              Create Challenge
             </Link>
-          </div>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredChallenges.map((challenge) => (
-              <Link
-                key={challenge.id}
-                to={`/challenge/${challenge.id}`}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200"
+          )}
+        </div>
+
+        {/* Search and Filters */}
+        <div className="bg-gray-800 rounded-xl border border-gray-700 p-6 mb-8">
+          <div className="flex flex-col lg:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search challenges..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-4">
+              <select
+                value={filters.category}
+                onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
+                className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               >
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                      {challenge.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm line-clamp-3 mb-3">
-                      {challenge.description}
-                    </p>
-                  </div>
-                </div>
+                <option value="all">All Categories</option>
+                <option value="gaming">Gaming</option>
+                <option value="trivia">Trivia</option>
+                <option value="sports">Sports Knowledge</option>
+                <option value="puzzle">Puzzle Solving</option>
+                <option value="creative">Creative</option>
+              </select>
 
-                <div className="flex items-center justify-between mb-4">
-                  <span className={getSkillLevelBadge(challenge.skillLevel)}>
-                    {challenge.skillLevel || 'Beginner'}
-                  </span>
-                  <div className="flex items-center text-blue-600 font-semibold">
-                    <CurrencyDollarIcon className="h-4 w-4 mr-1" />
-                    {formatCurrency(challenge.wagerAmount || 0)}
-                  </div>
-                </div>
+              <select
+                value={filters.skillLevel}
+                onChange={(e) => setFilters(prev => ({ ...prev, skillLevel: e.target.value }))}
+                className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              >
+                <option value="all">All Skill Levels</option>
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+              </select>
 
-                <div className="text-xs text-gray-500 flex items-center">
-                  <ClockIcon className="h-3 w-3 mr-1" />
-                  <span>Created {formatDate(challenge.createdAt)}</span>
-                </div>
-              </Link>
-            ))}
+              <select
+                value={filters.wagerRange}
+                onChange={(e) => setFilters(prev => ({ ...prev, wagerRange: e.target.value }))}
+                className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              >
+                <option value="all">All Wager Amounts</option>
+                <option value="low">1-10 SIM</option>
+                <option value="medium">11-50 SIM</option>
+                <option value="high">50+ SIM</option>
+              </select>
+            </div>
           </div>
-        )}
-      </div>
+        </div>
 
-      {/* Beta notice */}
-      <div className="bg-orange-50 border border-orange-200 rounded-xl p-6 mt-8">
-        <h3 className="text-lg font-semibold text-orange-800 mb-2">Beta Testing Notice</h3>
-        <p className="text-orange-700">
-          All challenges in this beta use fake SIM currency. You start with 100 SIM in test funds to experiment with the platform. 
-          No real money transactions occur during beta testing.
-        </p>
+        {/* Challenge Grid */}
+        <div className="space-y-6">
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
+              <p className="mt-4 text-gray-400">Loading challenges...</p>
+            </div>
+          ) : filteredChallenges.length === 0 ? (
+            <div className="text-center py-12">
+              <TrophyIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-white mb-2">No challenges found</h3>
+              <p className="text-gray-400 mb-6">
+                {searchTerm || filters.category !== 'all' || filters.skillLevel !== 'all' || filters.wagerRange !== 'all'
+                  ? 'Try adjusting your search or filters.'
+                  : 'No challenges are currently available. Check back later!'}
+              </p>
+              <Link
+                to="/create-challenge"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+              >
+                Create the First Challenge
+              </Link>
+            </div>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {filteredChallenges.map((challenge) => (
+                <Link
+                  key={challenge.id}
+                  to={`/challenge/${challenge.id}`}
+                  className="bg-gray-800 rounded-xl border border-gray-700 p-6 hover:bg-gray-750 transition-colors duration-200"
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-white mb-2 line-clamp-2">
+                        {challenge.title}
+                      </h3>
+                      <p className="text-gray-400 text-sm line-clamp-3 mb-3">
+                        {challenge.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between mb-4">
+                    <span className={getSkillLevelBadge(challenge.skillLevel)}>
+                      {challenge.skillLevel || 'Beginner'}
+                    </span>
+                    <div className="flex items-center text-orange-500 font-semibold">
+                      <CurrencyDollarIcon className="h-4 w-4 mr-1" />
+                      {formatCurrency(challenge.wagerAmount || 0)}
+                    </div>
+                  </div>
+
+                  <div className="text-xs text-gray-500 flex items-center">
+                    <ClockIcon className="h-3 w-3 mr-1" />
+                    <span>Created {formatDate(challenge.createdAt)}</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Beta notice */}
+        <div className="bg-orange-900 bg-opacity-30 border border-orange-600 rounded-xl p-6 mt-8">
+          <h3 className="text-lg font-semibold text-orange-300 mb-2">Beta Testing Notice</h3>
+          <p className="text-orange-200">
+            All challenges in this beta use fake SIM currency. You start with 100 SIM in test funds to experiment with the platform. 
+            No real money transactions occur during beta testing.
+          </p>
+        </div>
       </div>
     </main>
   );

@@ -157,13 +157,13 @@ const CreateChallenge = () => {
   }
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen bg-gray-900 py-8">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="card-gradient">
-          <h1 className="text-2xl font-bold gaming-text mb-6">Create Challenge</h1>
+        <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+          <h1 className="text-2xl font-bold text-white mb-6">Create Challenge</h1>
           
           {/* Skill-Based Policy Information */}
-          <div className="bg-blue-900/30 border border-blue-700 rounded-lg p-4 mb-6">
+          <div className="bg-blue-900 bg-opacity-30 border border-blue-600 rounded-lg p-4 mb-6">
             <h3 className="text-lg font-semibold text-blue-300 mb-2 flex items-center">
               <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
@@ -186,7 +186,7 @@ const CreateChallenge = () => {
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 Challenge Title
               </label>
               <input
@@ -195,13 +195,13 @@ const CreateChallenge = () => {
                 value={formData.title}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
                 placeholder="Enter challenge title"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 Game
               </label>
               <select
@@ -209,7 +209,7 @@ const CreateChallenge = () => {
                 value={formData.game}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
               >
                 <option value="">Select a game</option>
                 {gameOptions.map(game => (
@@ -219,7 +219,7 @@ const CreateChallenge = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 Stake Amount (SIM)
               </label>
               <input
@@ -230,7 +230,7 @@ const CreateChallenge = () => {
                 required
                 min="1"
                 step="1"
-                className="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
                 placeholder="Enter stake amount"
               />
               <p className="text-xs text-gray-400 mt-1">
@@ -239,7 +239,7 @@ const CreateChallenge = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 Description
               </label>
               <textarea
@@ -248,13 +248,13 @@ const CreateChallenge = () => {
                 onChange={handleInputChange}
                 required
                 rows={3}
-                className="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 resize-vertical"
                 placeholder="Describe your challenge"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 Rules
               </label>
               <textarea
@@ -263,7 +263,7 @@ const CreateChallenge = () => {
                 onChange={handleInputChange}
                 required
                 rows={3}
-                className="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 resize-vertical"
                 placeholder="Define the rules and conditions for winning"
               />
               <p className="text-xs text-gray-400 mt-1">
@@ -272,7 +272,7 @@ const CreateChallenge = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 Proof Requirements
               </label>
               <textarea
@@ -281,7 +281,7 @@ const CreateChallenge = () => {
                 onChange={handleInputChange}
                 required
                 rows={2}
-                className="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 resize-vertical"
                 placeholder="What proof is required to validate the win?"
               />
               <p className="text-xs text-gray-400 mt-1">
@@ -292,7 +292,7 @@ const CreateChallenge = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-colors"
+              className="w-full bg-orange-600 hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-colors"
             >
               {loading ? 'Creating Challenge...' : 'Create Challenge'}
             </button>

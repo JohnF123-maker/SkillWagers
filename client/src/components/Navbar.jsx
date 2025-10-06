@@ -44,8 +44,6 @@ const Navbar = () => {
     { path: '/marketplace', label: 'Marketplace', icon: ShoppingBagIcon },
     ...(currentUser ? [
       { path: '/wagers', label: 'My Wagers', icon: CreditCardIcon },
-      { path: '/create-challenge', label: 'Create Challenge', icon: PlusIcon },
-      { path: '/profile', label: 'Profile', icon: UserIcon },
     ] : [])
   ];
 

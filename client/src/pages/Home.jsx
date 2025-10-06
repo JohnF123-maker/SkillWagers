@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
 import BetaBadge from '../components/BetaBadge';
 import FakeCurrencyDisplay from '../components/FakeCurrencyDisplay';
+import DailyCoinsReward from '../components/DailyCoinsReward';
 import { 
   collection, 
   query, 
@@ -131,8 +132,8 @@ const Home = () => {
 
   if (!currentUser) {
     return (
-      <div className="min-h-screen bg-dark-900 flex flex-col justify-center items-center">
-        <div className="max-w-md w-full bg-dark-800 rounded-lg shadow-md p-6 text-center border border-gray-700">
+      <div className="min-h-screen bg-gray-900 flex flex-col justify-center items-center">
+        <div className="max-w-md w-full bg-gray-800 rounded-lg shadow-md p-6 text-center border border-gray-700">
           <div className="flex justify-center items-center space-x-2 mb-4">
             <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">S</span>
@@ -164,9 +165,9 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen bg-dark-900">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <div className="bg-dark-800 shadow-sm border-b border-gray-700">
+      <div className="bg-gray-800 shadow-sm border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
@@ -183,9 +184,12 @@ const Home = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Daily Coins Reward */}
+        <DailyCoinsReward />
+        
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-dark-800 rounded-lg shadow p-6 border border-gray-700">
+          <div className="bg-gray-800 rounded-lg shadow p-6 border border-gray-700">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400">Total Wagers</p>
@@ -195,7 +199,7 @@ const Home = () => {
             </div>
           </div>
           
-          <div className="bg-dark-800 rounded-lg shadow p-6 border border-gray-700">
+          <div className="bg-gray-800 rounded-lg shadow p-6 border border-gray-700">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400">Win Rate</p>
@@ -205,7 +209,7 @@ const Home = () => {
             </div>
           </div>
           
-          <div className="bg-dark-800 rounded-lg shadow p-6 border border-gray-700">
+          <div className="bg-gray-800 rounded-lg shadow p-6 border border-gray-700">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400">Total Earnings</p>
@@ -216,7 +220,7 @@ const Home = () => {
             </div>
           </div>
           
-          <div className="bg-dark-800 rounded-lg shadow p-6 border border-gray-700">
+          <div className="bg-gray-800 rounded-lg shadow p-6 border border-gray-700">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400">Current Rank</p>
@@ -230,7 +234,7 @@ const Home = () => {
         {/* Quick Actions & Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Quick Actions */}
-          <div className="bg-dark-800 rounded-lg shadow border border-gray-700">
+          <div className="bg-gray-800 rounded-lg shadow border border-gray-700">
             <div className="p-6 border-b border-gray-600">
               <h2 className="text-lg font-semibold text-white">Quick Actions</h2>
             </div>
@@ -238,7 +242,7 @@ const Home = () => {
               <div className="grid grid-cols-2 gap-4">
                 <Link
                   to="/wagers"
-                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300"
+                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300 transition-colors"
                 >
                   <ChartBarIcon className="h-8 w-8 text-blue-500 mb-2" />
                   <span className="text-sm font-medium text-white">My Wagers</span>
@@ -247,7 +251,7 @@ const Home = () => {
                 
                 <Link
                   to="/create-challenge"
-                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300"
+                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300 transition-colors"
                 >
                   <PlusIcon className="h-8 w-8 text-green-500 mb-2" />
                   <span className="text-sm font-medium text-white">Create Wager</span>
@@ -255,8 +259,8 @@ const Home = () => {
                 </Link>
                 
                 <Link
-                  to="/wagers"
-                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300"
+                  to="/wagering"
+                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300 transition-colors"
                 >
                   <ShoppingBagIcon className="h-8 w-8 text-purple-500 mb-2" />
                   <span className="text-sm font-medium text-white">View Challenges</span>
@@ -265,7 +269,7 @@ const Home = () => {
                 
                 <Link
                   to="/profile"
-                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300"
+                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300 transition-colors"
                 >
                   <UserGroupIcon className="h-8 w-8 text-orange-500 mb-2" />
                   <span className="text-sm font-medium text-white">Profile</span>
@@ -276,7 +280,7 @@ const Home = () => {
           </div>
 
           {/* Recent Activity */}
-          <div className="bg-dark-800 rounded-lg shadow border border-gray-700">
+          <div className="bg-gray-800 rounded-lg shadow border border-gray-700">
             <div className="p-6 border-b border-gray-600">
               <h2 className="text-lg font-semibold text-white">Recent Activity</h2>
             </div>
@@ -320,12 +324,12 @@ const Home = () => {
         </div>
 
         {/* Beta Notice */}
-        <div className="mt-8 bg-orange-50 border border-orange-200 rounded-lg p-6">
+        <div className="mt-8 bg-orange-900 bg-opacity-30 border border-orange-600 rounded-lg p-6">
           <div className="flex items-center space-x-2 mb-2">
             <BetaBadge size="sm" />
-            <h3 className="text-lg font-semibold text-orange-800">Beta Testing Mode</h3>
+            <h3 className="text-lg font-semibold text-orange-300">Beta Testing Mode</h3>
           </div>
-          <p className="text-sm text-orange-700">
+          <p className="text-sm text-orange-200">
             You're using SkillWagers Beta with fake currency for testing purposes. All wagers, earnings, and statistics are simulated. 
             Help us improve by reporting any issues you encounter!
           </p>

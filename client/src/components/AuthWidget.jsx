@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { auth, googleProvider } from '../lib/firebase';
-import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signInWithPopup } from 'firebase/auth';
 import Avatar from './Avatar';
 
 const AuthWidget = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -26,14 +27,6 @@ const AuthWidget = () => {
     }
   };
 
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error('Sign out error:', error);
-    }
-  };
-
   if (!user) {
     return (
       <Link
@@ -46,7 +39,10 @@ const AuthWidget = () => {
   }
 
   return (
-    <div className="flex items-center gap-3">
+    <button
+      onClick={() => navigate('/profile')}
+      className="flex items-center gap-3 hover:bg-gray-800 p-2 rounded-lg transition-colors"
+    >
       <Avatar 
         src={user.photoURL} 
         alt={user.displayName || 'User'} 
@@ -56,13 +52,7 @@ const AuthWidget = () => {
       <span className="text-sm text-gray-300 hidden sm:block">
         {user.displayName || user.email}
       </span>
-      <button 
-        className="rounded-xl border border-gray-300 text-gray-300 hover:text-white hover:border-white px-3 py-1 transition-colors text-sm"
-        onClick={handleSignOut}
-      >
-        Sign out
-      </button>
-    </div>
+    </button>
   );
 };
 
