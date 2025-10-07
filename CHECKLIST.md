@@ -22,8 +22,8 @@
 - [x] Step 3: pink (bg-pink-500)
 - [x] Step 4: red (bg-red-500)
 
-## Step 3: Logged-in Home Footer Text
-- [ ] Hide "Join SkillWagers Today" for authenticated users
+## Step 3: Logged-in Home Footer Text ✅
+- [x] Hide "Join SkillWagers Today" for authenticated users (already implemented correctly)
 
 ## Step 4: Button Hover/Click Color
 - [ ] Unify all buttons to use brandAccent color
