@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
+import HowItWorksCards from '../components/HowItWorksCards';
 import { 
   TrophyIcon, 
   ShieldCheckIcon, 
@@ -186,55 +187,7 @@ const LandingPage = () => {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-white">1</span>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-4">
-                Create a Challenge
-              </h3>
-              <p className="text-gray-300">
-                Set up a skill-based challenge and choose your wager amount. Define clear rules and proof requirements.
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-white">2</span>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-4">
-                Find an Opponent
-              </h3>
-              <p className="text-gray-300">
-                Invite specific opponents or accept open challenges. Stakes are securely held in escrow.
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-pink-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-white">3</span>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-4">
-                Submit Proof
-              </h3>
-              <p className="text-gray-300">
-                Complete your challenge and submit evidence (recordings, screenshots, or other proof as required).
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-white">4</span>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-4">
-                Automatic Settlement
-              </h3>
-              <p className="text-gray-300">
-                Once both players confirm results, wagers are settled automatically and winnings distributed.
-              </p>
-            </div>
-          </div>
+          <HowItWorksCards />
         </div>
       </section>
 
