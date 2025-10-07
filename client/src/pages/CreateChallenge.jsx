@@ -326,7 +326,7 @@ const CreateChallenge = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primaryAccent hover:bg-secondary-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-colors"
+              className="w-full bg-brand hover:bg-brand disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-colors"
             >
               {loading ? 'Creating Challenge...' : 'Create Challenge'}
             </button>

@@ -120,7 +120,7 @@ const Wagering = () => {
           {currentUser && (
             <Link
               to="/create-challenge"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primaryAccent hover:bg-secondary-600"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-brand hover:bg-brand"
             >
               <PlusIcon className="h-4 w-4 mr-2" />
               Create Challenge
@@ -201,7 +201,7 @@ const Wagering = () => {
               </p>
               <Link
                 to="/create-challenge"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primaryAccent hover:bg-secondary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primaryAccent"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-brand hover:bg-brand focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand"
               >
                 Create the First Challenge
               </Link>

@@ -197,7 +197,7 @@ const Wallet = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={handleClaimDevFunds}
-                className="bg-primaryAccent text-white px-6 py-3 rounded-md hover:bg-secondary-600 transition-colors flex items-center justify-center space-x-2"
+                className="bg-brand text-white px-6 py-3 rounded-md hover:bg-brand transition-colors flex items-center justify-center space-x-2"
                 disabled={userProfile?.hasClaimed}
               >
                 <BanknotesIcon className="h-5 w-5" />

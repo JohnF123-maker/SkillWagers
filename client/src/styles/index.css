@@ -89,13 +89,13 @@
   
   .gaming-text {
     font-family: 'Orbitron', monospace;
-    color: #2b1b4b !important;
+    color: #6f4cff !important;
     font-weight: bold;
     padding-right: 4px;
     padding-left: 1px;
     display: inline-block;
     opacity: 1 !important;
-    text-shadow: 0 0 1px rgba(43, 27, 75, 0.5);
+    text-shadow: 0 0 1px rgba(111, 76, 255, 0.5);
   }
   
   .glow-effect {

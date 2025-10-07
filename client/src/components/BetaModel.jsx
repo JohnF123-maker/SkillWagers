@@ -45,7 +45,7 @@ const BetaModel = () => {
         </div>
         
         <button
-          className="w-full rounded-xl px-4 py-3 bg-primaryAccent text-white font-semibold hover:bg-secondary-600 transition-colors"
+          className="w-full rounded-xl px-4 py-3 bg-brand text-white font-semibold hover:bg-brand transition-colors"
           onClick={handleClose}
         >
           Got it, let's test

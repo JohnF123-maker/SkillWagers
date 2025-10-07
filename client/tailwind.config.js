@@ -6,9 +6,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        brand: '#2b1b4b',        // dark purple
-        brandAccent: '#6f4cff',  // accent purple
-        primary: '#2b1b4b', // deep violet
+        brand: '#6f4cff',        // primary action color (replaces dark purple)
+        brandAccent: '#6f4cff',  // same color for consistency
+        brandHover: '#6f4cff',   // same color for hover/active
+        brandText: '#E8E5FF',    // light text for contrast on dark bg
+        primary: '#6f4cff',      // electric violet (was dark purple)
         primaryAccent: '#6f4cff', // electric violet accent
         textPrimary: '#E6E2F3', // light text on dark
         textMuted: '#A29BBF',

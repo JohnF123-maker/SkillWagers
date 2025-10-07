@@ -58,7 +58,7 @@ const AuthWidget = () => {
     return (
       <Link
         to="/auth" 
-        className="rounded-xl border border-primaryAccent text-primaryAccent px-4 py-2 hover:bg-primaryAccent hover:text-white transition-colors text-sm font-medium"
+        className="rounded-xl border border-brand text-brand px-4 py-2 hover:bg-brand hover:text-white transition-colors text-sm font-medium"
       >
         Login/Register
       </Link>
