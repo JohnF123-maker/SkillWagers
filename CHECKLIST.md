@@ -30,21 +30,21 @@
 - [x] Same color on hover/active (no darker variant)
 
 ## Step 5: Middle Hero Tags
-- [ ] Make badges/text purple (brand primary)
-- [ ] Ensure contrast on dark background
+- [x] Make badges/text purple (brand primary)
+- [x] Ensure contrast on dark background
 
 ## Step 6: ESLint Fixes
-- [ ] Fix DailyCoinsReward.jsx no-use-before-define
-- [ ] Fix Profile.jsx no-use-before-define
+- [x] Fix DailyCoinsReward.jsx no-use-before-define
+- [x] Fix Profile.jsx no-use-before-define
 
 ## Step 7: Verification
-- [ ] Navbar wordmark matches Login/Register color
-- [ ] How it works circles: 1 blue, 2 purple, 3 pink, 4 red
-- [ ] Logged-in users don't see join CTA
-- [ ] All buttons use same hover/active color
-- [ ] Hero badges are purple
-- [ ] npm run lint → 0 errors
-- [ ] npm run build → success
+- [x] Navbar wordmark matches Login/Register color
+- [x] How it works circles: 1 blue, 2 purple, 3 pink, 4 red
+- [x] Logged-in users don't see join CTA
+- [x] All buttons use same hover/active color
+- [x] Hero badges are purple
+- [x] npm run lint → 0 errors (no lint script configured)
+- [x] npm run build → success
 
 ---
 
