@@ -25,9 +25,9 @@
 ## Step 3: Logged-in Home Footer Text ✅
 - [x] Hide "Join SkillWagers Today" for authenticated users (already implemented correctly)
 
-## Step 4: Button Hover/Click Color
-- [ ] Unify all buttons to use brandAccent color
-- [ ] Same color on hover/active (no darker variant)
+## Step 4: Button Hover/Click Color ✅
+- [x] Unify all buttons to use brandAccent color
+- [x] Same color on hover/active (no darker variant)
 
 ## Step 5: Middle Hero Tags
 - [ ] Make badges/text purple (brand primary)
