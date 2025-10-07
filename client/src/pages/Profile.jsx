@@ -49,21 +49,6 @@ const Profile = () => {
   const [showSignOutModal, setShowSignOutModal] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setAuthLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [currentUser]);
-
-  useEffect(() => {
-    if (currentUser && userProfile) {
-      fetchUserStats();
-      fetchRecentActivity();
-    }
-  }, [currentUser, userProfile, fetchUserStats, fetchRecentActivity]);
-
   const fetchUserStats = useCallback(async () => {
     if (!currentUser?.uid) {
       console.warn('No current user ID available for fetching stats');
@@ -183,6 +168,21 @@ const Profile = () => {
       console.error('Error fetching recent activity:', error);
     }
   }, [currentUser?.uid]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAuthLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (currentUser && userProfile) {
+      fetchUserStats();
+      fetchRecentActivity();
+    }
+  }, [currentUser, userProfile, fetchUserStats, fetchRecentActivity]);
 
   if (authLoading) {
     return (

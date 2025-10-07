@@ -12,12 +12,6 @@ const DailyCoinsReward = () => {
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState(false);
 
-  useEffect(() => {
-    if (currentUser) {
-      checkClaimStatus();
-    }
-  }, [currentUser, checkClaimStatus]);
-
   const checkClaimStatus = useCallback(async () => {
     if (!currentUser?.uid) {
       console.warn('No current user available for checking claim status');
@@ -60,6 +54,12 @@ const DailyCoinsReward = () => {
       setLoading(false);
     }
   }, [currentUser?.uid]);
+
+  useEffect(() => {
+    if (currentUser) {
+      checkClaimStatus();
+    }
+  }, [currentUser, checkClaimStatus]);
 
   const claimDailyCoins = async () => {
     if (!canClaim || claiming || !currentUser?.uid) return;
