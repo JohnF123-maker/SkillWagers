@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { updateProfile } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { auth, db, storage } from '../../firebase';
+import { db, storage } from '../../firebase';
 import { PhotoIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
@@ -38,6 +38,11 @@ const ProfilePictureUploader = ({ currentUser, userProfile, refreshProfile }) =>
   };
 
   const uploadProfilePicture = async (file) => {
+    if (!currentUser?.uid) {
+      toast.error('User not authenticated');
+      return;
+    }
+
     setUploading(true);
     try {
       // Upload to Firebase Storage
@@ -86,7 +91,7 @@ const ProfilePictureUploader = ({ currentUser, userProfile, refreshProfile }) =>
           </div>
           {uploading && (
             <div className="absolute inset-0 rounded-full bg-black bg-opacity-50 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-600"></div>
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primaryAccent"></div>
             </div>
           )}
         </div>
@@ -95,7 +100,7 @@ const ProfilePictureUploader = ({ currentUser, userProfile, refreshProfile }) =>
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 disabled:opacity-50 transition-colors"
+            className="bg-primaryAccent text-white px-4 py-2 rounded-lg hover:bg-secondary-600 disabled:opacity-50 transition-colors"
           >
             {uploading ? 'Uploading...' : 'Change Picture'}
           </button>

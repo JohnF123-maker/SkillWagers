@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { updateProfile } from 'firebase/auth';
-import { doc, updateDoc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../../firebase';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
@@ -21,6 +21,11 @@ const DisplayNameOnceForm = ({ currentUser, userProfile, refreshProfile }) => {
   const handleSave = async () => {
     if (!displayName.trim()) {
       toast.error('Display name cannot be empty');
+      return;
+    }
+
+    if (!currentUser?.uid) {
+      toast.error('User not authenticated');
       return;
     }
 
@@ -70,7 +75,7 @@ const DisplayNameOnceForm = ({ currentUser, userProfile, refreshProfile }) => {
         {!editing && (
           <button
             onClick={() => setEditing(true)}
-            className="text-orange-500 hover:text-orange-400 p-1"
+            className="text-purple-300 hover:text-purple-200 p-1"
           >
             <PencilIcon className="h-4 w-4" />
           </button>
@@ -94,7 +99,7 @@ const DisplayNameOnceForm = ({ currentUser, userProfile, refreshProfile }) => {
             <button
               onClick={handleSave}
               disabled={loading}
-              className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 disabled:opacity-50"
+              className="bg-primaryAccent text-white px-4 py-2 rounded-lg hover:bg-secondary-600 disabled:opacity-50"
             >
               {loading ? 'Saving...' : 'Save'}
             </button>

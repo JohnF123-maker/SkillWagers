@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -16,9 +16,14 @@ const DailyCoinsReward = () => {
     if (currentUser) {
       checkClaimStatus();
     }
-  }, [currentUser]);
+  }, [currentUser, checkClaimStatus]);
 
-  const checkClaimStatus = async () => {
+  const checkClaimStatus = useCallback(async () => {
+    if (!currentUser?.uid) {
+      console.warn('No current user available for checking claim status');
+      return;
+    }
+
     try {
       setLoading(true);
       const dailyRewardRef = doc(db, 'dailyRewards', currentUser.uid);
@@ -54,10 +59,10 @@ const DailyCoinsReward = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentUser?.uid]);
 
   const claimDailyCoins = async () => {
-    if (!canClaim || claiming) return;
+    if (!canClaim || claiming || !currentUser?.uid) return;
 
     try {
       setClaiming(true);
@@ -122,7 +127,7 @@ const DailyCoinsReward = () => {
   }
 
   return (
-    <div className="bg-gradient-to-r from-yellow-900 via-orange-900 to-red-900 bg-opacity-30 border border-yellow-600 rounded-xl p-4 mb-6">
+    <div className="bg-gradient-to-r from-yellow-900 via-purple-900 to-red-900 bg-opacity-30 border border-yellow-600 rounded-xl p-4 mb-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-yellow-500 bg-opacity-20 rounded-lg">

@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { 
+  collection, 
+  serverTimestamp,
+  runTransaction,
+  doc,
+  increment
+} from 'firebase/firestore';
 import { db } from '../firebase';
 import toast from 'react-hot-toast';
 
@@ -90,7 +96,7 @@ const CreateChallenge = () => {
     }
 
     if (!userProfile?.ageVerified) {
-      toast.error('You must verify your age before creating challenges');
+      toast.error('You must verify your age before creating challenges. Go to Profile → Settings to verify your age.');
       return;
     }
 
@@ -115,26 +121,54 @@ const CreateChallenge = () => {
     try {
       setLoading(true);
 
-      const challengeData = {
-        ...formData,
-        stakeAmount: stakeAmount,
-        creatorId: currentUser.uid,
-        creatorName: userProfile.displayName || currentUser.displayName,
-        creatorEmail: currentUser.email,
-        status: 'open',
-        acceptorId: null,
-        acceptorName: null,
-        proofSubmitted: false,
-        disputeRaised: false,
-        winner: null,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      };
+      // Use transaction to ensure atomic operation: deduct balance + create challenge
+      const result = await runTransaction(db, async (transaction) => {
+        const userRef = doc(db, 'users', currentUser.uid);
+        const userDoc = await transaction.get(userRef);
+        
+        if (!userDoc.exists()) {
+          throw new Error('User document not found');
+        }
+        
+        const userData = userDoc.data();
+        const currentBalance = userData.betaBalance || 0;
+        
+        // Double-check balance within transaction
+        if (currentBalance < stakeAmount) {
+          throw new Error('Insufficient balance for this stake amount');
+        }
+        
+        // Deduct stake amount from user balance
+        transaction.update(userRef, {
+          betaBalance: increment(-stakeAmount)
+        });
+        
+        const challengeData = {
+          ...formData,
+          stakeAmount: stakeAmount,
+          creatorId: currentUser.uid,
+          creatorName: userProfile.displayName || currentUser.displayName,
+          creatorEmail: currentUser.email,
+          status: 'open',
+          acceptorId: null,
+          acceptorName: null,
+          proofSubmitted: false,
+          disputeRaised: false,
+          winner: null,
+          escrowAmount: stakeAmount,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        };
 
-      const docRef = await addDoc(collection(db, 'challenges'), challengeData);
+        // Create challenge document
+        const challengeRef = doc(collection(db, 'challenges'));
+        transaction.set(challengeRef, challengeData);
+        
+        return { challengeId: challengeRef.id, newBalance: currentBalance - stakeAmount };
+      });
       
-      toast.success('Challenge created successfully!');
-      navigate(`/challenge/${docRef.id}`);
+      toast.success(`Challenge created! ${stakeAmount} coins escrowed. Remaining balance: ${result.newBalance}`);
+      navigate(`/challenge/${result.challengeId}`);
     } catch (error) {
       console.error('Error creating challenge:', error);
       toast.error('Failed to create challenge');
@@ -195,7 +229,7 @@ const CreateChallenge = () => {
                 value={formData.title}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primaryAccent"
                 placeholder="Enter challenge title"
               />
             </div>
@@ -209,7 +243,7 @@ const CreateChallenge = () => {
                 value={formData.game}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primaryAccent"
               >
                 <option value="">Select a game</option>
                 {gameOptions.map(game => (
@@ -230,7 +264,7 @@ const CreateChallenge = () => {
                 required
                 min="1"
                 step="1"
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primaryAccent"
                 placeholder="Enter stake amount"
               />
               <p className="text-xs text-gray-400 mt-1">
@@ -248,7 +282,7 @@ const CreateChallenge = () => {
                 onChange={handleInputChange}
                 required
                 rows={3}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 resize-vertical"
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primaryAccent resize-vertical"
                 placeholder="Describe your challenge"
               />
             </div>
@@ -263,7 +297,7 @@ const CreateChallenge = () => {
                 onChange={handleInputChange}
                 required
                 rows={3}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 resize-vertical"
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primaryAccent resize-vertical"
                 placeholder="Define the rules and conditions for winning"
               />
               <p className="text-xs text-gray-400 mt-1">
@@ -281,7 +315,7 @@ const CreateChallenge = () => {
                 onChange={handleInputChange}
                 required
                 rows={2}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 resize-vertical"
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primaryAccent resize-vertical"
                 placeholder="What proof is required to validate the win?"
               />
               <p className="text-xs text-gray-400 mt-1">
@@ -292,7 +326,7 @@ const CreateChallenge = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-orange-600 hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-colors"
+              className="w-full bg-primaryAccent hover:bg-secondary-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-colors"
             >
               {loading ? 'Creating Challenge...' : 'Create Challenge'}
             </button>

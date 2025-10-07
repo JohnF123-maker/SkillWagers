@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
 import { 
@@ -30,11 +30,7 @@ const ChallengeDetail = () => {
   const [proofText, setProofText] = useState('');
   const [showProofModal, setShowProofModal] = useState(false);
 
-  useEffect(() => {
-    fetchChallenge();
-  }, [id]);
-
-  const fetchChallenge = async () => {
+  const fetchChallenge = useCallback(async () => {
     try {
       const challengeDoc = await getDoc(doc(db, 'challenges', id));
       if (challengeDoc.exists()) {
@@ -49,7 +45,11 @@ const ChallengeDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, navigate]);
+
+  useEffect(() => {
+    fetchChallenge();
+  }, [fetchChallenge]);
 
   const handleAcceptChallenge = async () => {
     if (!currentUser || !userProfile) {

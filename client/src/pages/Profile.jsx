@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -33,7 +33,7 @@ import {
 import { db } from '../firebase';
 
 const Profile = () => {
-  const { userProfile, currentUser, refreshProfile } = useAuth();
+  const { userProfile, currentUser } = useAuth();
   const [authLoading, setAuthLoading] = useState(true);
   const [profileData, setProfileData] = useState({
     totalChallenges: 0,
@@ -62,9 +62,14 @@ const Profile = () => {
       fetchUserStats();
       fetchRecentActivity();
     }
-  }, [currentUser, userProfile]);
+  }, [currentUser, userProfile, fetchUserStats, fetchRecentActivity]);
 
-  const fetchUserStats = async () => {
+  const fetchUserStats = useCallback(async () => {
+    if (!currentUser?.uid) {
+      console.warn('No current user ID available for fetching stats');
+      return;
+    }
+
     try {
       // Get user's challenges (created or participated)
       const q = query(
@@ -117,9 +122,14 @@ const Profile = () => {
     } catch (error) {
       console.error('Error fetching user stats:', error);
     }
-  };
+  }, [currentUser?.uid]);
 
-  const fetchRecentActivity = async () => {
+  const fetchRecentActivity = useCallback(async () => {
+    if (!currentUser?.uid) {
+      console.warn('No current user ID available for fetching recent activity');
+      return;
+    }
+
     try {
       const challengesRef = collection(db, 'challenges');
       const recentQuery = query(
@@ -172,7 +182,7 @@ const Profile = () => {
     } catch (error) {
       console.error('Error fetching recent activity:', error);
     }
-  };
+  }, [currentUser?.uid]);
 
   if (authLoading) {
     return (
@@ -247,9 +257,9 @@ const Profile = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400">Current Rank</p>
-                <p className="text-2xl font-bold text-orange-600">{profileData.rank}</p>
+                <p className="text-2xl font-bold text-primaryAccent">{profileData.rank}</p>
               </div>
-              <FireIcon className="h-8 w-8 text-orange-500" />
+              <FireIcon className="h-8 w-8 text-purple-300" />
             </div>
           </div>
         </div>
@@ -265,7 +275,7 @@ const Profile = () => {
               <div className="grid grid-cols-2 gap-4">
                 <Link
                   to="/wagers"
-                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300 transition-colors"
+                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-purple-400 transition-colors"
                 >
                   <ChartBarIcon className="h-8 w-8 text-blue-500 mb-2" />
                   <span className="text-sm font-medium text-white">My Wagers</span>
@@ -274,7 +284,7 @@ const Profile = () => {
                 
                 <Link
                   to="/create-challenge"
-                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300 transition-colors"
+                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-purple-400 transition-colors"
                 >
                   <PlusIcon className="h-8 w-8 text-green-500 mb-2" />
                   <span className="text-sm font-medium text-white">Create Wager</span>
@@ -283,7 +293,7 @@ const Profile = () => {
                 
                 <Link
                   to="/wagering"
-                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300 transition-colors"
+                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-purple-400 transition-colors"
                 >
                   <ShoppingBagIcon className="h-8 w-8 text-purple-500 mb-2" />
                   <span className="text-sm font-medium text-white">View Challenges</span>
@@ -292,9 +302,9 @@ const Profile = () => {
                 
                 <Link
                   to="/wallet"
-                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300 transition-colors"
+                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-purple-400 transition-colors"
                 >
-                  <UserGroupIcon className="h-8 w-8 text-orange-500 mb-2" />
+                  <UserGroupIcon className="h-8 w-8 text-purple-300 mb-2" />
                   <span className="text-sm font-medium text-white">Wallet</span>
                   <span className="text-xs text-gray-500">Manage funds</span>
                 </Link>
@@ -337,9 +347,9 @@ const Profile = () => {
               <div className="mt-6 pt-4 border-t border-gray-600">
                 <Link
                   to="/wagers"
-                  className="text-sm text-orange-600 hover:text-orange-500 font-medium"
+                  className="text-sm text-primaryAccent hover:text-purple-300 font-medium"
                 >
-                  View all activity →
+                  View all activity ?
                 </Link>
               </div>
             </div>
@@ -347,12 +357,12 @@ const Profile = () => {
         </div>
 
         {/* Beta Notice */}
-        <div className="bg-orange-900 bg-opacity-30 border border-orange-600 rounded-lg p-6 mb-8">
+        <div className="bg-purple-900 bg-opacity-30 border border-primaryAccent rounded-lg p-6 mb-8">
           <div className="flex items-center space-x-2 mb-2">
             <BetaBadge size="sm" />
-            <h3 className="text-lg font-semibold text-orange-300">Beta Testing Mode</h3>
+            <h3 className="text-lg font-semibold text-purple-200">Beta Testing Mode</h3>
           </div>
-          <p className="text-sm text-orange-200">
+          <p className="text-sm text-purple-100">
             You're using SkillWagers Beta with fake currency for testing purposes. All wagers, earnings, and statistics are simulated. 
             Help us improve by reporting any issues you encounter!
           </p>

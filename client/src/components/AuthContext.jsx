@@ -14,7 +14,8 @@ import {
   setDoc, 
   updateDoc, 
   serverTimestamp,
-  increment
+  increment,
+  runTransaction
 } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 
@@ -51,6 +52,7 @@ export const AuthProvider = ({ children }) => {
         createdAt: serverTimestamp(),
         lastLoginAt: serverTimestamp(),
         betaBalance: 100,
+        lastDailyRewardAt: null,
         stats: {
           wins: 0,
           losses: 0,
@@ -154,6 +156,55 @@ export const AuthProvider = ({ children }) => {
     
     setUserProfile(userData);
     return user;
+  };
+
+  const claimDailyReward = async () => {
+    try {
+      if (!currentUser) throw new Error('No authenticated user');
+      
+      const userDocRef = doc(db, 'users', currentUser.uid);
+      
+      // Use transaction to ensure atomic operation
+      const result = await runTransaction(db, async (transaction) => {
+        const userDoc = await transaction.get(userDocRef);
+        
+        if (!userDoc.exists()) {
+          throw new Error('User document not found');
+        }
+        
+        const userData = userDoc.data();
+        const now = new Date();
+        const lastReward = userData.lastDailyRewardAt?.toDate();
+        
+        // Check if 24 hours have passed
+        if (lastReward) {
+          const timeDiff = now - lastReward;
+          const twentyFourHours = 24 * 60 * 60 * 1000;
+          
+          if (timeDiff < twentyFourHours) {
+            const remainingTime = twentyFourHours - timeDiff;
+            throw new Error(`Daily reward already claimed. Next reward in ${Math.ceil(remainingTime / (1000 * 60))} minutes.`);
+          }
+        }
+        
+        // Update user balance and last reward time
+        transaction.update(userDocRef, {
+          betaBalance: increment(100),
+          lastDailyRewardAt: serverTimestamp(),
+          'stats.totalRewardsClaimed': increment(1)
+        });
+        
+        return { success: true, amount: 100, newBalance: (userData.betaBalance || 0) + 100 };
+      });
+      
+      // Refresh user profile to get updated data
+      await refreshProfile();
+      
+      return result;
+    } catch (error) {
+      console.error('Error claiming daily reward:', error);
+      throw error;
+    }
   };
 
   const claimDevFunds = async () => {
@@ -269,6 +320,7 @@ export const AuthProvider = ({ children }) => {
     updateUserProfile,
     verifyAge,
     refreshProfile,
+    claimDailyReward,
     claimDevFunds,
     loading
   };

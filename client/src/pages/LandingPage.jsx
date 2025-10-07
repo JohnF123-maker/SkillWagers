@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
 import { 
   TrophyIcon, 
@@ -12,14 +12,6 @@ import {
 
 const LandingPage = () => {
   const { currentUser } = useAuth();
-  const navigate = useNavigate();
-
-  // Redirect logged-in users to home page
-  useEffect(() => {
-    if (currentUser) {
-      navigate('/home');
-    }
-  }, [currentUser, navigate]);
 
   const features = [
     {
@@ -68,7 +60,7 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-gaming py-20">
+      <section className="relative overflow-hidden bg-gray-900 py-20">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
@@ -232,7 +224,7 @@ const LandingPage = () => {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 bg-gradient-to-r from-primaryAccent to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl font-bold text-white">4</span>
               </div>
               <h3 className="text-xl font-semibold text-white mb-4">
@@ -247,7 +239,7 @@ const LandingPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-gaming">
+      <section className="py-20 bg-gray-800">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
             Ready to Join Our <span className="gaming-text">Beta</span>?

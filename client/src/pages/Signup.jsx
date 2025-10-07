@@ -229,7 +229,7 @@ const Signup = () => {
     <div className="min-h-screen bg-dark-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center items-center space-x-2">
-          <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-gradient-to-r from-primaryAccent to-purple-500 rounded-lg flex items-center justify-center">
             <span className="font-bold" style={{ color: 'white' }}>S</span>
           </div>
           <h1 className="text-2xl font-bold" style={{ color: 'white' }}>SkillWagers</h1>
@@ -252,7 +252,7 @@ const Signup = () => {
               type="button"
               onClick={handleGoogleSignUp}
               disabled={loading}
-              className="w-full flex justify-center items-center px-4 py-2 border border-gray-600 rounded-md shadow-sm text-sm font-medium bg-dark-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+              className="w-full flex justify-center items-center px-4 py-2 border border-gray-600 rounded-md shadow-sm text-sm font-medium bg-dark-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primaryAccent disabled:opacity-50"
               style={{ color: 'white' }}
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -500,7 +500,7 @@ const Signup = () => {
                   required
                   checked={formData.agreeToTerms}
                   onChange={handleChange}
-                  className={`h-4 w-4 text-orange-600 focus:ring-orange-500 border rounded bg-dark-700 ${
+                  className={`h-4 w-4 text-primaryAccent focus:ring-primaryAccent border rounded bg-dark-700 ${
                     errors.agreeToTerms ? 'border-red-500' : 'border-gray-600'
                   }`}
                 />
@@ -508,16 +508,16 @@ const Signup = () => {
                   I agree to the{' '}
                   <button
                     type="button"
-                    className="text-orange-600 hover:text-orange-500 underline bg-transparent border-none cursor-pointer"
-                    onClick={() => console.log('Open Terms and Conditions')}
+                    className="text-primaryAccent hover:text-purple-400 underline bg-transparent border-none cursor-pointer"
+                    onClick={() => window.open('/terms', '_blank')}
                   >
                     Terms and Conditions
                   </button>{' '}
                   and{' '}
                   <button
                     type="button"
-                    className="text-orange-600 hover:text-orange-500 underline bg-transparent border-none cursor-pointer"
-                    onClick={() => console.log('Open Privacy Policy')}
+                    className="text-primaryAccent hover:text-purple-400 underline bg-transparent border-none cursor-pointer"
+                    onClick={() => window.open('/privacy', '_blank')}
                   >
                     Privacy Policy
                   </button>
@@ -530,11 +530,11 @@ const Signup = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md bg-primaryAccent hover:bg-secondary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primaryAccent disabled:opacity-50"
                 style={{ color: 'white' }}
               >
                 <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                  <UserPlusIcon className="h-5 w-5 text-orange-500 group-hover:text-orange-400" />
+                  <UserPlusIcon className="h-5 w-5 text-purple-300 group-hover:text-purple-200" />
                 </span>
                 {loading ? 'Creating account...' : 'Create account'}
               </button>
@@ -549,7 +549,7 @@ const Signup = () => {
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-dark-800" style={{ color: 'white' }}>
                   Already have an account?{' '}
-                  <Link to="/login" className="font-medium text-orange-600 hover:text-orange-500">
+                  <Link to="/login" className="font-medium text-primaryAccent hover:text-purple-400">
                     Sign in
                   </Link>
                 </span>

@@ -11,7 +11,6 @@ import {
   BanknotesIcon,
   ArrowUpIcon,
   ArrowDownIcon,
-  ClockIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
@@ -169,15 +168,6 @@ const Wallet = () => {
     return 'text-gray-300';
   };
 
-  const getStatusBadge = (status) => {
-    const badges = {
-      'completed': 'status-completed',
-      'pending': 'status-pending',
-      'failed': 'status-disputed'
-    };
-    return badges[status] || 'status-pending';
-  };
-
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -207,7 +197,7 @@ const Wallet = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={handleClaimDevFunds}
-                className="bg-orange-600 text-white px-6 py-3 rounded-md hover:bg-orange-700 transition-colors flex items-center justify-center space-x-2"
+                className="bg-primaryAccent text-white px-6 py-3 rounded-md hover:bg-secondary-600 transition-colors flex items-center justify-center space-x-2"
                 disabled={userProfile?.hasClaimed}
               >
                 <BanknotesIcon className="h-5 w-5" />
@@ -227,12 +217,12 @@ const Wallet = () => {
         </div>
 
         {/* Beta Notice */}
-        <div className="bg-orange-50 border border-orange-200 rounded-lg p-6 mb-8">
+        <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 mb-8">
           <div className="flex items-center space-x-3">
-            <ExclamationTriangleIcon className="h-6 w-6 text-orange-600 flex-shrink-0" />
+            <ExclamationTriangleIcon className="h-6 w-6 text-primaryAccent flex-shrink-0" />
             <div>
-              <h3 className="text-lg font-semibold text-orange-800 mb-2">Beta Testing Mode</h3>
-              <p className="text-orange-700 text-sm">
+              <h3 className="text-lg font-semibold text-purple-800 mb-2">Beta Testing Mode</h3>
+              <p className="text-purple-700 text-sm">
                 This is a Beta testing environment using fake currency. All transactions are simulated for testing purposes only. 
                 Real money deposits and withdrawals will be available in the production version.
               </p>
@@ -273,7 +263,7 @@ const Wallet = () => {
                       <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-700">
                         {transaction.status}
                       </span>
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                         FAKE
                       </span>
                     </div>
@@ -294,7 +284,7 @@ const Wallet = () => {
               <CreditCardIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-600 mb-2">No Transactions Yet</h3>
               <p className="text-gray-500">Your Beta transaction history will appear here</p>
-              <p className="text-sm text-orange-600 mt-2">Try claiming your $100 dev funds to get started!</p>
+              <p className="text-sm text-primaryAccent mt-2">Try claiming your $100 dev funds to get started!</p>
             </div>
           )}
         </div>

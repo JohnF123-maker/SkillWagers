@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { doc, getDoc, runTransaction, serverTimestamp } from 'firebase/firestore';
+import { doc, runTransaction, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { GiftIcon, ClockIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
@@ -31,7 +31,7 @@ const DailyCoinsCard = ({ currentUser, userProfile, refreshProfile }) => {
   }, [userProfile]);
 
   const handleClaim = async () => {
-    if (!canClaim) return;
+    if (!canClaim || !currentUser?.uid) return;
 
     setLoading(true);
     try {
@@ -78,7 +78,7 @@ const DailyCoinsCard = ({ currentUser, userProfile, refreshProfile }) => {
   const balance = userProfile?.balanceCoins || 0;
 
   return (
-    <div className="bg-gradient-to-r from-yellow-900 via-orange-900 to-red-900 bg-opacity-30 border border-yellow-600 rounded-xl p-4">
+    <div className="bg-gradient-to-r from-yellow-900 via-purple-900 to-red-900 bg-opacity-30 border border-yellow-600 rounded-xl p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-yellow-500 bg-opacity-20 rounded-lg">

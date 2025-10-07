@@ -191,9 +191,9 @@ const HomeSummary = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400">Current Rank</p>
-                <p className="text-2xl font-bold text-orange-600">{loading ? '...' : userStats.rank}</p>
+                <p className="text-2xl font-bold text-primaryAccent">{loading ? '...' : userStats.rank}</p>
               </div>
-              <FireIcon className="h-8 w-8 text-orange-500" />
+              <FireIcon className="h-8 w-8 text-purple-300" />
             </div>
           </div>
         </div>
@@ -209,7 +209,7 @@ const HomeSummary = () => {
               <div className="grid grid-cols-2 gap-4">
                 <Link
                   to="/wagers"
-                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300 transition-colors"
+                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-purple-400 transition-colors"
                 >
                   <ChartBarIcon className="h-8 w-8 text-blue-500 mb-2" />
                   <span className="text-sm font-medium text-white">My Wagers</span>
@@ -218,7 +218,7 @@ const HomeSummary = () => {
                 
                 <Link
                   to="/create-challenge"
-                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300 transition-colors"
+                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-purple-400 transition-colors"
                 >
                   <PlusIcon className="h-8 w-8 text-green-500 mb-2" />
                   <span className="text-sm font-medium text-white">Create Wager</span>
@@ -227,7 +227,7 @@ const HomeSummary = () => {
                 
                 <Link
                   to="/wagering"
-                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300 transition-colors"
+                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-purple-400 transition-colors"
                 >
                   <ShoppingBagIcon className="h-8 w-8 text-purple-500 mb-2" />
                   <span className="text-sm font-medium text-white">View Challenges</span>
@@ -236,9 +236,9 @@ const HomeSummary = () => {
                 
                 <Link
                   to="/profile"
-                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-orange-300 transition-colors"
+                  className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-purple-400 transition-colors"
                 >
-                  <UserGroupIcon className="h-8 w-8 text-orange-500 mb-2" />
+                  <UserGroupIcon className="h-8 w-8 text-purple-300 mb-2" />
                   <span className="text-sm font-medium text-white">Profile</span>
                   <span className="text-xs text-gray-500">View progress</span>
                 </Link>
@@ -281,7 +281,7 @@ const HomeSummary = () => {
               <div className="mt-6 pt-4 border-t border-gray-600">
                 <Link
                   to="/wagers"
-                  className="text-sm text-orange-600 hover:text-orange-500 font-medium"
+                  className="text-sm text-primaryAccent hover:text-purple-300 font-medium"
                 >
                   View all activity →
                 </Link>
@@ -291,12 +291,12 @@ const HomeSummary = () => {
         </div>
 
         {/* Beta Notice */}
-        <div className="bg-orange-900 bg-opacity-30 border border-orange-600 rounded-lg p-6">
+        <div className="bg-purple-900 bg-opacity-30 border border-primaryAccent rounded-lg p-6">
           <div className="flex items-center space-x-2 mb-2">
             <BetaBadge size="sm" />
-            <h3 className="text-lg font-semibold text-orange-300">Beta Testing Mode</h3>
+            <h3 className="text-lg font-semibold text-purple-200">Beta Testing Mode</h3>
           </div>
-          <p className="text-sm text-orange-200">
+          <p className="text-sm text-purple-100">
             You're using SkillWagers Beta with fake currency for testing purposes. All wagers, earnings, and statistics are simulated. 
             Help us improve by reporting any issues you encounter!
           </p>

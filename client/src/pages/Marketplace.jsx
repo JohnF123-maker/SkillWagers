@@ -58,7 +58,7 @@ const Marketplace = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Coming Soon Banner */}
         <div className="text-center mb-12">
-          <div className="mx-auto w-24 h-24 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mb-6">
+          <div className="mx-auto w-24 h-24 bg-gradient-to-r from-primaryAccent to-red-500 rounded-full flex items-center justify-center mb-6">
             <ClockIcon className="h-12 w-12 text-white" />
           </div>
           
@@ -72,7 +72,7 @@ const Marketplace = () => {
           </p>
 
           <div className="flex items-center justify-center space-x-2 mb-8">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primaryAccent"></div>
             <span className="text-sm text-gray-500">Currently in development...</span>
           </div>
         </div>
@@ -87,8 +87,8 @@ const Marketplace = () => {
               return (
                 <div key={index} className="bg-gray-800 rounded-lg shadow-sm border border-gray-700 p-6">
                   <div className="flex items-start space-x-4">
-                    <div className="p-3 bg-orange-900 bg-opacity-30 rounded-lg">
-                      <IconComponent className="h-6 w-6 text-orange-500" />
+                    <div className="p-3 bg-purple-900 bg-opacity-30 rounded-lg">
+                      <IconComponent className="h-6 w-6 text-purple-300" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-2">
@@ -107,31 +107,31 @@ const Marketplace = () => {
         </div>
 
         {/* Current Beta Features */}
-        <div className="bg-orange-900 bg-opacity-30 border border-orange-600 rounded-lg p-8 mb-8">
+        <div className="bg-purple-900 bg-opacity-30 border border-primaryAccent rounded-lg p-8 mb-8">
           <div className="text-center">
             <BetaBadge size="md" className="mb-4" />
-            <h3 className="text-xl font-semibold text-orange-300 mb-4">
+            <h3 className="text-xl font-semibold text-purple-200 mb-4">
               What You Can Do Now in Beta
             </h3>
-            <p className="text-orange-200 mb-6">
+            <p className="text-purple-100 mb-6">
               While we're building the marketplace, you can still test core features:
             </p>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
               <Link
                 to="/create-challenge"
-                className="flex items-center justify-center space-x-2 bg-gray-800 border border-orange-600 rounded-lg p-4 hover:bg-gray-700 transition-colors"
+                className="flex items-center justify-center space-x-2 bg-gray-800 border border-primaryAccent rounded-lg p-4 hover:bg-gray-700 transition-colors"
               >
-                <PlusIcon className="h-5 w-5 text-orange-500" />
-                <span className="text-orange-300 font-medium">Create Challenges</span>
+                <PlusIcon className="h-5 w-5 text-purple-300" />
+                <span className="text-purple-200 font-medium">Create Challenges</span>
               </Link>
               
               <Link
                 to="/wagering"
-                className="flex items-center justify-center space-x-2 bg-gray-800 border border-orange-600 rounded-lg p-4 hover:bg-gray-700 transition-colors"
+                className="flex items-center justify-center space-x-2 bg-gray-800 border border-primaryAccent rounded-lg p-4 hover:bg-gray-700 transition-colors"
               >
-                <TrophyIcon className="h-5 w-5 text-orange-500" />
-                <span className="text-orange-300 font-medium">Browse Challenges</span>
+                <TrophyIcon className="h-5 w-5 text-purple-300" />
+                <span className="text-purple-200 font-medium">Browse Challenges</span>
               </Link>
             </div>
           </div>
@@ -149,10 +149,10 @@ const Marketplace = () => {
           
           <div className="space-y-3">
             <div className="text-sm text-gray-400">
-              Send feedback to: <strong className="text-orange-500">beta@skillwagers.com</strong>
+              Send feedback to: <strong className="text-purple-300">beta@skillwagers.com</strong>
             </div>
             <div className="text-sm text-gray-400">
-              Gift Card Trading Launch: <strong className="text-orange-500">Q2 2024</strong>
+              Gift Card Trading Launch: <strong className="text-purple-300">Q2 2024</strong>
             </div>
           </div>
         </div>

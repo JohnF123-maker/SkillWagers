@@ -6,14 +6,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: '#f0f9ff',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          900: '#1e3a8a',
-        },
+        brand: '#2b1b4b',        // dark purple
+        brandAccent: '#6f4cff',  // accent purple
+        primary: '#2b1b4b', // deep violet
+        primaryAccent: '#6f4cff', // electric violet accent
+        textPrimary: '#E6E2F3', // light text on dark
+        textMuted: '#A29BBF',
         secondary: {
           400: '#a78bfa',
           500: '#8b5cf6',

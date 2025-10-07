@@ -26,9 +26,9 @@ const BetaModel = () => {
           You're in early access. All currency is fake for testing. Let's run through a quick demo.
         </p>
         
-        <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-4">
-          <h4 className="text-sm font-semibold text-orange-800 mb-2">Beta Features:</h4>
-          <ul className="text-xs text-orange-700 space-y-1">
+        <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 mb-4">
+          <h4 className="text-sm font-semibold text-purple-800 mb-2">Beta Features:</h4>
+          <ul className="text-xs text-purple-700 space-y-1">
             <li>• $100 free starting balance (fake currency)</li>
             <li>• Test challenges and wagers</li>
             <li>• Limited marketplace functionality</li>
@@ -45,7 +45,7 @@ const BetaModel = () => {
         </div>
         
         <button
-          className="w-full rounded-xl px-4 py-3 bg-orange-600 text-white font-semibold hover:bg-orange-700 transition-colors"
+          className="w-full rounded-xl px-4 py-3 bg-primaryAccent text-white font-semibold hover:bg-secondary-600 transition-colors"
           onClick={handleClose}
         >
           Got it, let's test

@@ -11,10 +11,10 @@
 
 ---
 
-## Step 1: Navbar Title Color + Logo
-- [ ] Set top-left site name to match Login/Register button color
-- [ ] Add logo icon to left of title
-- [ ] Ensure rest of page doesn't inherit this color globally
+## Step 1: Navbar Title Color + Logo ✅
+- [x] Set top-left site name to match Login/Register button color (text-brandAccent)
+- [x] Add logo icon to left of title (already present)
+- [x] Ensure rest of page doesn't inherit this color globally (only applied to navbar title)
 
 ## Step 2: "How it works" Colored Circles  
 - [ ] Step 1: blue (bg-blue-500)

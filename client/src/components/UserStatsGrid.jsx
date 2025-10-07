@@ -34,6 +34,11 @@ const UserStatsGrid = () => {
   }, [currentUser]);
 
   const fetchUserStats = async () => {
+    if (!currentUser?.uid) {
+      console.warn('No current user available for fetching stats');
+      return;
+    }
+
     try {
       setLoading(true);
       
@@ -131,9 +136,9 @@ const UserStatsGrid = () => {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-400">Current Rank</p>
-            <p className="text-2xl font-bold text-orange-600">{loading ? '...' : userStats.rank}</p>
+            <p className="text-2xl font-bold text-primaryAccent">{loading ? '...' : userStats.rank}</p>
           </div>
-          <FireIcon className="h-8 w-8 text-orange-500" />
+          <FireIcon className="h-8 w-8 text-purple-300" />
         </div>
       </div>
     </div>

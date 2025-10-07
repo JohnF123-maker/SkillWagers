@@ -120,7 +120,7 @@ const Wagering = () => {
           {currentUser && (
             <Link
               to="/create-challenge"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primaryAccent hover:bg-secondary-600"
             >
               <PlusIcon className="h-4 w-4 mr-2" />
               Create Challenge
@@ -139,7 +139,7 @@ const Wagering = () => {
                   placeholder="Search challenges..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-primaryAccent focus:border-primaryAccent"
                 />
               </div>
             </div>
@@ -148,7 +148,7 @@ const Wagering = () => {
               <select
                 value={filters.category}
                 onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
-                className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-primaryAccent focus:border-primaryAccent"
               >
                 <option value="all">All Categories</option>
                 <option value="gaming">Gaming</option>
@@ -161,7 +161,7 @@ const Wagering = () => {
               <select
                 value={filters.skillLevel}
                 onChange={(e) => setFilters(prev => ({ ...prev, skillLevel: e.target.value }))}
-                className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-primaryAccent focus:border-primaryAccent"
               >
                 <option value="all">All Skill Levels</option>
                 <option value="beginner">Beginner</option>
@@ -172,7 +172,7 @@ const Wagering = () => {
               <select
                 value={filters.wagerRange}
                 onChange={(e) => setFilters(prev => ({ ...prev, wagerRange: e.target.value }))}
-                className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-primaryAccent focus:border-primaryAccent"
               >
                 <option value="all">All Wager Amounts</option>
                 <option value="low">1-10 SIM</option>
@@ -187,7 +187,7 @@ const Wagering = () => {
         <div className="space-y-6">
           {loading ? (
             <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primaryAccent mx-auto"></div>
               <p className="mt-4 text-gray-400">Loading challenges...</p>
             </div>
           ) : filteredChallenges.length === 0 ? (
@@ -201,7 +201,7 @@ const Wagering = () => {
               </p>
               <Link
                 to="/create-challenge"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primaryAccent hover:bg-secondary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primaryAccent"
               >
                 Create the First Challenge
               </Link>
@@ -229,7 +229,7 @@ const Wagering = () => {
                     <span className={getSkillLevelBadge(challenge.skillLevel)}>
                       {challenge.skillLevel || 'Beginner'}
                     </span>
-                    <div className="flex items-center text-orange-500 font-semibold">
+                    <div className="flex items-center text-purple-300 font-semibold">
                       <CurrencyDollarIcon className="h-4 w-4 mr-1" />
                       {formatCurrency(challenge.wagerAmount || 0)}
                     </div>
@@ -246,9 +246,9 @@ const Wagering = () => {
         </div>
 
         {/* Beta notice */}
-        <div className="bg-orange-900 bg-opacity-30 border border-orange-600 rounded-xl p-6 mt-8">
-          <h3 className="text-lg font-semibold text-orange-300 mb-2">Beta Testing Notice</h3>
-          <p className="text-orange-200">
+        <div className="bg-purple-900 bg-opacity-30 border border-primaryAccent rounded-xl p-6 mt-8">
+          <h3 className="text-lg font-semibold text-purple-200 mb-2">Beta Testing Notice</h3>
+          <p className="text-purple-100">
             All challenges in this beta use fake SIM currency. You start with 100 SIM in test funds to experiment with the platform. 
             No real money transactions occur during beta testing.
           </p>

@@ -4,7 +4,11 @@
 .env
 .env.*          # local/test/prod envs
 !.env.example   # keep placeholder example in repo
+.env.local      # CRA local environment
+.env.production # CRA production environment
 client/.env     # CRA frontend env (never commit real keys)
+client/.env.local
+client/.env.production
 server/.env
 
 # ─────────────────────────────

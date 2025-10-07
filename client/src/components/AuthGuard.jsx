@@ -12,13 +12,13 @@ const AuthGuard = ({ children, adminOnly = false }) => {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center">
         <div className="flex items-center space-x-2 mb-4">
-          <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-gradient-to-r from-primaryAccent to-red-500 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">SW</span>
           </div>
           <span className="text-xl font-bold text-gray-900">SkillWagers</span>
           <BetaBadge size="xs" />
         </div>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primaryAccent"></div>
         <p className="mt-2 text-sm text-gray-600">Loading...</p>
       </div>
     );
@@ -35,7 +35,7 @@ const AuthGuard = ({ children, adminOnly = false }) => {
       <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center">
         <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6 text-center">
           <div className="flex justify-center items-center space-x-2 mb-4">
-            <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-r from-primaryAccent to-red-500 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">SW</span>
             </div>
             <span className="text-xl font-bold text-gray-900">SkillWagers</span>
@@ -47,7 +47,7 @@ const AuthGuard = ({ children, adminOnly = false }) => {
           </p>
           <button
             onClick={() => window.history.back()}
-            className="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 transition-colors"
+            className="bg-primaryAccent text-white px-4 py-2 rounded-md hover:bg-secondary-600 transition-colors"
           >
             Go Back
           </button>

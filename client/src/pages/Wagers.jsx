@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { PlusIcon } from '@heroicons/react/24/outline';
 
@@ -11,7 +11,7 @@ export default function Wagers() {
           <p className="text-gray-400 mb-8">Coming soon! For now, browse and create challenges from other pages.</p>
           <Link
             to="/create-challenge"
-            className="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-primaryAccent hover:bg-secondary-600 text-white font-medium rounded-lg transition-colors"
           >
             <PlusIcon className="h-4 w-4 mr-2" />
             Create Challenge
