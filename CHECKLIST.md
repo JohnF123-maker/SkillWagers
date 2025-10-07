@@ -16,11 +16,11 @@
 - [x] Add logo icon to left of title (already present)
 - [x] Ensure rest of page doesn't inherit this color globally (only applied to navbar title)
 
-## Step 2: "How it works" Colored Circles  
-- [ ] Step 1: blue (bg-blue-500)
-- [ ] Step 2: purple (bg-purple-500)
-- [ ] Step 3: pink (bg-pink-500)
-- [ ] Step 4: red (bg-red-500)
+## Step 2: "How it works" Colored Circles ✅
+- [x] Step 1: blue (bg-blue-500)
+- [x] Step 2: purple (bg-purple-500)
+- [x] Step 3: pink (bg-pink-500)
+- [x] Step 4: red (bg-red-500)
 
 ## Step 3: Logged-in Home Footer Text
 - [ ] Hide "Join SkillWagers Today" for authenticated users
