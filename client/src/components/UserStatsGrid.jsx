@@ -136,7 +136,7 @@ const UserStatsGrid = () => {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-400">Current Rank</p>
-            <p className="text-2xl font-bold text-primaryAccent">{loading ? '...' : userStats.rank}</p>
+            <p className="text-2xl font-bold text-brand">{loading ? '...' : userStats.rank}</p>
           </div>
           <FireIcon className="h-8 w-8 text-purple-300" />
         </div>

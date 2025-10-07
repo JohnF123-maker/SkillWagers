@@ -191,7 +191,7 @@ const HomeSummary = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400">Current Rank</p>
-                <p className="text-2xl font-bold text-primaryAccent">{loading ? '...' : userStats.rank}</p>
+                <p className="text-2xl font-bold text-brand">{loading ? '...' : userStats.rank}</p>
               </div>
               <FireIcon className="h-8 w-8 text-purple-300" />
             </div>
@@ -281,7 +281,7 @@ const HomeSummary = () => {
               <div className="mt-6 pt-4 border-t border-gray-600">
                 <Link
                   to="/wagers"
-                  className="text-sm text-primaryAccent hover:text-purple-300 font-medium"
+                  className="text-sm text-brand hover:text-purple-300 font-medium"
                 >
                   View all activity →
                 </Link>
@@ -291,7 +291,7 @@ const HomeSummary = () => {
         </div>
 
         {/* Beta Notice */}
-        <div className="bg-purple-900 bg-opacity-30 border border-primaryAccent rounded-lg p-6">
+        <div className="bg-purple-900 bg-opacity-30 border border-brand rounded-lg p-6">
           <div className="flex items-center space-x-2 mb-2">
             <BetaBadge size="sm" />
             <h3 className="text-lg font-semibold text-purple-200">Beta Testing Mode</h3>

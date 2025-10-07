@@ -246,7 +246,7 @@ const Wagering = () => {
         </div>
 
         {/* Beta notice */}
-        <div className="bg-purple-900 bg-opacity-30 border border-primaryAccent rounded-xl p-6 mt-8">
+        <div className="bg-purple-900 bg-opacity-30 border border-brand rounded-xl p-6 mt-8">
           <h3 className="text-lg font-semibold text-purple-200 mb-2">Beta Testing Notice</h3>
           <p className="text-purple-100">
             All challenges in this beta use fake SIM currency. You start with 100 SIM in test funds to experiment with the platform. 

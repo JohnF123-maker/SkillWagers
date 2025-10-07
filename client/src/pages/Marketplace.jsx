@@ -107,7 +107,7 @@ const Marketplace = () => {
         </div>
 
         {/* Current Beta Features */}
-        <div className="bg-purple-900 bg-opacity-30 border border-primaryAccent rounded-lg p-8 mb-8">
+        <div className="bg-purple-900 bg-opacity-30 border border-brand rounded-lg p-8 mb-8">
           <div className="text-center">
             <BetaBadge size="md" className="mb-4" />
             <h3 className="text-xl font-semibold text-purple-200 mb-4">
