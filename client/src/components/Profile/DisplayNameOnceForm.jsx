@@ -75,7 +75,7 @@ const DisplayNameOnceForm = ({ currentUser, userProfile, refreshProfile }) => {
         {!editing && (
           <button
             onClick={() => setEditing(true)}
-            className="text-purple-300 hover:text-purple-200 p-1"
+            className="text-brand hover:text-white p-1"
           >
             <PencilIcon className="h-4 w-4" />
           </button>

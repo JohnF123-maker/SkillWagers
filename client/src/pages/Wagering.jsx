@@ -229,7 +229,7 @@ const Wagering = () => {
                     <span className={getSkillLevelBadge(challenge.skillLevel)}>
                       {challenge.skillLevel || 'Beginner'}
                     </span>
-                    <div className="flex items-center text-purple-300 font-semibold">
+                    <div className="flex items-center text-brand font-semibold">
                       <CurrencyDollarIcon className="h-4 w-4 mr-1" />
                       {formatCurrency(challenge.wagerAmount || 0)}
                     </div>
@@ -246,9 +246,9 @@ const Wagering = () => {
         </div>
 
         {/* Beta notice */}
-        <div className="bg-purple-900 bg-opacity-30 border border-brand rounded-xl p-6 mt-8">
-          <h3 className="text-lg font-semibold text-purple-200 mb-2">Beta Testing Notice</h3>
-          <p className="text-purple-100">
+        <div className="border rounded-xl p-6 mt-8" style={{ backgroundColor: '#6f4cff', borderColor: '#6f4cff' }}>
+          <h3 className="text-lg font-semibold text-white mb-2">Beta Testing Notice</h3>
+          <p className="text-white opacity-90">
             All challenges in this beta use fake SIM currency. You start with 100 SIM in test funds to experiment with the platform. 
             No real money transactions occur during beta testing.
           </p>

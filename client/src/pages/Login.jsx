@@ -233,7 +233,7 @@ const Login = () => {
                 style={{ color: 'white' }}
               >
                 <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                  <LockClosedIcon className="h-5 w-5 text-purple-300 group-hover:text-purple-200" />
+                  <LockClosedIcon className="h-5 w-5 text-brand group-hover:text-white" />
                 </span>
                 {loading ? 'Signing in...' : 'Sign in'}
               </button>

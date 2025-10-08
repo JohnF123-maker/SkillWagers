@@ -158,7 +158,7 @@ const Profile = () => {
             amount: '-$10.00',
             time: '2 days ago',
             icon: UserGroupIcon,
-            color: 'text-purple-500'
+            color: 'text-brand'
           }
         ]);
       } else {
@@ -259,7 +259,7 @@ const Profile = () => {
                 <p className="text-sm font-medium text-gray-400">Current Rank</p>
                 <p className="text-2xl font-bold text-brand">{profileData.rank}</p>
               </div>
-              <FireIcon className="h-8 w-8 text-purple-300" />
+              <FireIcon className="h-8 w-8 text-brand" />
             </div>
           </div>
         </div>
@@ -347,7 +347,7 @@ const Profile = () => {
               <div className="mt-6 pt-4 border-t border-gray-600">
                 <Link
                   to="/wagers"
-                  className="text-sm text-brand hover:text-purple-300 font-medium"
+                  className="text-sm text-brand hover:text-brand font-medium"
                 >
                   View all activity ?
                 </Link>
@@ -357,12 +357,12 @@ const Profile = () => {
         </div>
 
         {/* Beta Notice */}
-        <div className="bg-purple-900 bg-opacity-30 border border-brand rounded-lg p-6 mb-8">
+        <div className="border rounded-lg p-6 mb-8" style={{ backgroundColor: '#6f4cff', borderColor: '#6f4cff' }}>
           <div className="flex items-center space-x-2 mb-2">
             <BetaBadge size="sm" />
-            <h3 className="text-lg font-semibold text-purple-200">Beta Testing Mode</h3>
+            <h3 className="text-lg font-semibold text-white">Beta Testing Mode</h3>
           </div>
-          <p className="text-sm text-purple-100">
+          <p className="text-sm text-white opacity-90">
             You're using SkillWagers Beta with fake currency for testing purposes. All wagers, earnings, and statistics are simulated. 
             Help us improve by reporting any issues you encounter!
           </p>

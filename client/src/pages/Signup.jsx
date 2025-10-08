@@ -534,7 +534,7 @@ const Signup = () => {
                 style={{ color: 'white' }}
               >
                 <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                  <UserPlusIcon className="h-5 w-5 text-purple-300 group-hover:text-purple-200" />
+                  <UserPlusIcon className="h-5 w-5 text-brand group-hover:text-white" />
                 </span>
                 {loading ? 'Creating account...' : 'Create account'}
               </button>
