@@ -14,6 +14,10 @@ module.exports = {
         primaryAccent: '#6f4cff', // electric violet accent
         textPrimary: '#E6E2F3', // light text on dark
         textMuted: '#A29BBF',
+        // Beta notice red colors
+        betaRedBg: '#fee2e2',    // light red background
+        betaRedText: '#b91c1c',  // dark red text
+        betaRedBorder: '#fecaca', // red border
         secondary: {
           400: '#a78bfa',
           500: '#8b5cf6',

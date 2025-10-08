@@ -22,7 +22,12 @@ import AdminPanel from './pages/AdminPanel';
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <Router 
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
         <div className="min-h-screen bg-dark-900">
           <Navbar />
           <BetaModel />

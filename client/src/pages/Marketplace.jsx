@@ -88,7 +88,7 @@ const Marketplace = () => {
                 <div key={index} className="bg-gray-800 rounded-lg shadow-sm border border-gray-700 p-6">
                   <div className="flex items-start space-x-4">
                     <div className="p-3 bg-purple-900 bg-opacity-30 rounded-lg">
-                      <IconComponent className="h-6 w-6 text-purple-300" />
+                      <IconComponent className="h-6 w-6 text-brand" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-2">
@@ -122,7 +122,7 @@ const Marketplace = () => {
                 to="/create-challenge"
                 className="flex items-center justify-center space-x-2 bg-gray-800 border border-primaryAccent rounded-lg p-4 hover:bg-gray-700 transition-colors"
               >
-                <PlusIcon className="h-5 w-5 text-purple-300" />
+                <PlusIcon className="h-5 w-5 text-brand" />
                 <span className="text-purple-200 font-medium">Create Challenges</span>
               </Link>
               
@@ -130,7 +130,7 @@ const Marketplace = () => {
                 to="/wagering"
                 className="flex items-center justify-center space-x-2 bg-gray-800 border border-primaryAccent rounded-lg p-4 hover:bg-gray-700 transition-colors"
               >
-                <TrophyIcon className="h-5 w-5 text-purple-300" />
+                <TrophyIcon className="h-5 w-5 text-brand" />
                 <span className="text-purple-200 font-medium">Browse Challenges</span>
               </Link>
             </div>

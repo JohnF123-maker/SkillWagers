@@ -10,7 +10,7 @@ const items = [
 function HowItWorksCard({ item, index }) {
   const [flipped, setFlipped] = useState(false);
 
-  // Hover for desktop; click/tap toggles for mobile & accessibility
+  // Toggle for mobile tap and keyboard
   const toggle = () => setFlipped(v => !v);
 
   // Optional accent ring colors
@@ -22,25 +22,49 @@ function HowItWorksCard({ item, index }) {
   };
 
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      onMouseEnter={() => setFlipped(true)}
-      onMouseLeave={() => setFlipped(false)}
-      aria-pressed={flipped}
-      className={`preserve-3d relative w-full aspect-square rounded-2xl bg-neutral-900 text-white ring-1 ring-white/10 ${ringColors[index]} overflow-hidden focus:outline-none focus:ring-2 focus:ring-brand/50 transition-all duration-300`}
+    <div 
+      className={`card w-full aspect-square ${flipped ? 'flipped' : ''}`}
+      style={{ perspective: '1000px' }}
     >
-      <div className={`absolute inset-0 grid place-items-center transition-transform duration-300 backface-hidden ${flipped ? 'rotate-y-180' : ''}`}>
-        <div className="flex flex-col items-center gap-2">
+      <button
+        type="button"
+        onClick={toggle}
+        onMouseEnter={() => setFlipped(true)}
+        onMouseLeave={() => setFlipped(false)}
+        aria-expanded={flipped}
+        className={`card-inner relative w-full h-full rounded-2xl bg-neutral-900 text-white ring-1 ring-white/10 ${ringColors[index]} focus:outline-none focus:ring-2 focus:ring-brand/50`}
+        style={{
+          transformStyle: 'preserve-3d',
+          transition: 'transform 0.5s ease',
+          transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
+        }}
+      >
+        {/* Front face */}
+        <div 
+          className="card-face card-front absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-2xl"
+          style={{
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            transform: 'rotateY(0deg)'
+          }}
+        >
           <span className="text-4xl">{item.frontIcon}</span>
           <span className="text-lg font-semibold">{item.title}</span>
         </div>
-      </div>
 
-      <div className={`absolute inset-0 grid place-items-center px-4 text-center transition-transform duration-300 rotate-y-180 backface-hidden ${flipped ? '' : '-rotate-y-180'}`}>
-        <p className="text-sm text-neutral-200">{item.desc}</p>
-      </div>
-    </button>
+        {/* Back face */}
+        <div 
+          className="card-face card-back absolute inset-0 flex items-center justify-center px-4 text-center rounded-2xl"
+          style={{
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            transform: 'rotateY(180deg)'
+          }}
+        >
+          <p className="text-sm text-neutral-200">{item.desc}</p>
+        </div>
+      </button>
+    </div>
   );
 }
 

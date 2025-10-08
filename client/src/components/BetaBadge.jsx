@@ -9,7 +9,7 @@ const BetaBadge = ({ size = 'sm', className = '' }) => {
   };
 
   return (
-    <span className={`inline-flex items-center ${sizeClasses[size]} font-semibold bg-gradient-to-r from-brand to-red-500 text-white rounded-full shadow-sm animate-pulse ${className}`}>
+    <span className={`inline-flex items-center ${sizeClasses[size]} font-semibold bg-betaRedBg text-betaRedText border border-betaRedBorder rounded-full shadow-sm animate-pulse ${className}`}>
       BETA
     </span>
   );

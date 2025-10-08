@@ -229,7 +229,7 @@ const HomeSummary = () => {
                   to="/wagering"
                   className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-purple-400 transition-colors"
                 >
-                  <ShoppingBagIcon className="h-8 w-8 text-purple-500 mb-2" />
+                  <ShoppingBagIcon className="h-8 w-8 text-brand mb-2" />
                   <span className="text-sm font-medium text-white">View Challenges</span>
                   <span className="text-xs text-gray-500">Browse wagers</span>
                 </Link>
@@ -238,7 +238,7 @@ const HomeSummary = () => {
                   to="/profile"
                   className="flex flex-col items-center p-4 border border-gray-600 rounded-lg hover:border-purple-400 transition-colors"
                 >
-                  <UserGroupIcon className="h-8 w-8 text-purple-300 mb-2" />
+                  <UserGroupIcon className="h-8 w-8 text-brand mb-2" />
                   <span className="text-sm font-medium text-white">Profile</span>
                   <span className="text-xs text-gray-500">View progress</span>
                 </Link>
