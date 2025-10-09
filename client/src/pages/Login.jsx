@@ -1,24 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../components/AuthContext';
+import { loginSchema } from '../validation/authSchemas';
 import BetaBadge from '../components/BetaBadge';
-import PasswordInput from '../components/PasswordInput';
-import ErrorTooltip from '../components/ErrorTooltip';
+import AuthInput from '../components/forms/AuthInput';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-  const [errors, setErrors] = useState({});
+  const [submitError, setSubmitError] = useState('');
 
   const { login, googleSignIn, currentUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const from = location.state?.from?.pathname || '/';
+
+  const { register, handleSubmit, formState: { errors }, setError } = useForm({
+    resolver: zodResolver(loginSchema),
+    mode: "onBlur",
+    reValidateMode: "onBlur"
+  });
 
   // Redirect authenticated users
   useEffect(() => {
@@ -27,75 +31,29 @@ const Login = () => {
     }
   }, [currentUser, navigate, from]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-
-    // Clear errors when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
-
-    // Real-time email validation
-    if (name === 'email' && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-      setErrors(prev => ({
-        ...prev,
-        email: 'Please enter a valid email address'
-      }));
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email address is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-
+  const onSubmit = async (data) => {
     setLoading(true);
+    setSubmitError('');
 
     try {
-      await login(formData.email, formData.password);
+      await login(data.email, data.password);
       navigate(from, { replace: true });
     } catch (error) {
       console.error('Login error:', error);
       
       // Set specific field errors based on Firebase error codes
       if (error.code === 'auth/user-not-found') {
-        setErrors({ email: 'No account found with this email address' });
+        setError('email', { message: 'No account found with this email address' });
       } else if (error.code === 'auth/wrong-password') {
-        setErrors({ password: 'Incorrect password' });
+        setError('password', { message: 'Incorrect password' });
       } else if (error.code === 'auth/invalid-email') {
-        setErrors({ email: 'Invalid email address' });
+        setError('email', { message: 'Invalid email address' });
       } else if (error.code === 'auth/user-disabled') {
-        setErrors({ email: 'This account has been disabled' });
+        setError('email', { message: 'This account has been disabled' });
       } else if (error.code === 'auth/too-many-requests') {
-        setErrors({ password: 'Too many failed attempts. Please try again later' });
+        setError('password', { message: 'Too many failed attempts. Please try again later' });
       } else {
-        setErrors({ password: error.message || 'Login failed' });
+        setSubmitError(error.message || 'Login failed');
       }
     } finally {
       setLoading(false);
@@ -104,12 +62,13 @@ const Login = () => {
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
+    setSubmitError('');
     try {
       await googleSignIn();
       navigate(from, { replace: true });
     } catch (error) {
       console.error('Google sign in error:', error);
-      setErrors({ password: 'Google sign in failed. Please try again.' });
+      setSubmitError('Google sign in failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -135,7 +94,7 @@ const Login = () => {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-dark-800 py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-gray-700">
+        <div className="auth-card">
           {/* Google Sign In */}
           <div className="mb-6">
             <button
@@ -159,58 +118,33 @@ const Login = () => {
               <div className="w-full border-t border-gray-600" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-dark-800" style={{ color: 'white' }}>Or sign in with email</span>
+              <span className="px-2 bg-[#0f1220] text-[#f5f7ff]">Or sign in with email</span>
             </div>
           </div>
 
-          <form className="mt-6 space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <div className="flex items-center justify-between">
-                <label htmlFor="email" className="block text-sm font-medium" style={{ color: 'white' }}>
-                  Email address
-                </label>
-                {errors.email && <ErrorTooltip message={errors.email} />}
+          <form className="mt-6 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
+            {submitError && (
+              <div className="bg-red-600 text-white p-3 rounded-md text-sm">
+                {submitError}
               </div>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  style={{
-                    backgroundColor: 'white',
-                    color: 'black',
-                    border: errors.email ? '1px solid #ef4444' : '1px solid #d1d5db',
-                    borderRadius: '6px',
-                    padding: '12px 16px',
-                    width: '100%',
-                    fontSize: '14px',
-                    outline: 'none'
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = errors.email ? '#ef4444' : '#6f4cff';
-                    e.target.style.boxShadow = errors.email ? '0 0 0 2px rgba(239, 68, 68, 0.2)' : '0 0 0 2px rgba(111, 76, 255, 0.2)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = errors.email ? '#ef4444' : '#d1d5db';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                  placeholder="Enter your email"
-                />
-              </div>
-            </div>
+            )}
 
-            <PasswordInput
-              name="password"
+            <AuthInput
+              label="Email address"
+              name="email"
+              type="email"
+              placeholder="Enter your email address"
+              register={register}
+              error={errors.email}
+            />
+
+            <AuthInput
               label="Password"
-              required
-              value={formData.password}
-              onChange={handleChange}
-              error={errors.password}
+              name="password"
+              type="password"
               placeholder="Enter your password"
+              register={register}
+              error={errors.password}
             />
 
             <div className="flex items-center justify-between">
@@ -229,8 +163,7 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md bg-brand hover:bg-brand focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand disabled:opacity-50"
-                style={{ color: 'white' }}
+                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-brand hover:bg-brand focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand disabled:opacity-50"
               >
                 <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                   <LockClosedIcon className="h-5 w-5 text-brand group-hover:text-white" />
@@ -246,7 +179,7 @@ const Login = () => {
                 <div className="w-full border-t border-gray-600" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-dark-800" style={{ color: 'white' }}>
+                <span className="px-2 bg-[#0f1220] text-[#f5f7ff]">
                   Don't have an account?{' '}
                   <Link to="/signup" className="font-medium text-primaryAccent hover:text-purple-400">
                     Sign up for Beta

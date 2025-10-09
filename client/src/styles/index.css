@@ -170,7 +170,144 @@
     transform: rotateY(-180deg);
   }
 
-  /* Flip Card Components */
+  /* Authentication Form Styles */
+  .auth-card {
+    background: #0f1220;
+    color: #f5f7ff;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,.25);
+    max-width: 480px;
+    margin: 0 auto;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    border: 1px solid #23284a;
+  }
+
+  /* Unified Auth Input Styles */
+  .auth-input {
+    background: #f2f3f7 !important;
+    color: #0f1220 !important;
+    border: 1px solid #d7d9e0 !important;
+    border-radius: 12px !important;
+    padding: 12px 14px !important;
+    width: 100% !important;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif !important;
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+    outline: none !important;
+  }
+
+  .auth-input::placeholder {
+    color: #7a8094 !important;
+    font-size: 16px !important;
+    opacity: 1 !important;
+  }
+
+  .auth-input:focus {
+    outline: none !important;
+    border-color: #6f4cff !important;
+    box-shadow: 0 0 0 3px rgba(111,76,255,.25) !important;
+    background: #f2f3f7 !important;
+  }
+
+  .auth-label {
+    display: block !important;
+    margin-bottom: 6px !important;
+    color: #f5f7ff !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+  }
+
+  /* Password input specific styling */
+  .auth-input-password {
+    padding-right: 48px !important;
+  }
+
+  .auth-card input,
+  .auth-card select,
+  .auth-card textarea {
+    background: #f2f3f7 !important;
+    color: #0f1220 !important;
+    border: 1px solid #d7d9e0 !important;
+    border-radius: 12px !important;
+    padding: 12px 14px !important;
+    width: 100% !important;
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+  }
+
+  .auth-card input::placeholder,
+  .auth-card textarea::placeholder {
+    font-size: 16px !important;
+    opacity: 1 !important;
+    color: #7a8094 !important;
+    font-weight: 400 !important;
+  }
+
+  .auth-card label {
+    color: #f5f7ff !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+  }
+
+  .auth-card input:focus {
+    outline: none !important;
+    border-color: #6f4cff !important;
+    box-shadow: 0 0 0 3px rgba(111,76,255,.25) !important;
+  }
+
+  /* How It Works Card Components */
+  .how-card {
+    perspective: 1000px;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .how-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .how-card-inner.flipped,
+  .how-card[aria-expanded="true"] .how-card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .how-card-face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    border-radius: 1rem;
+    overflow: hidden;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .how-card-front {
+    transform: rotateY(0deg);
+  }
+
+  .how-card-back {
+    transform: rotateY(180deg);
+  }
+
+  /* Desktop hover support */
+  @media (hover: hover) {
+    .how-card:hover .how-card-inner {
+      transform: rotateY(180deg);
+    }
+  }
+
+  /* Legacy Flip Card Components (keeping for compatibility) */
   .flip-card {
     perspective: 1000px;
     width: 100%;
@@ -205,7 +342,7 @@
     transform: rotateY(180deg);
   }
 
-  /* Desktop hover support */
+  /* Desktop hover support for legacy */
   @media (hover: hover) {
     .flip-card:hover .flip-card-inner {
       transform: rotateY(180deg);

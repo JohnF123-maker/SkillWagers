@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { useAuth } from './AuthContext';
+import toast from 'react-hot-toast';
 
 const BalanceBadge = () => {
   const { currentUser, userProfile, claimDailyReward } = useAuth();
@@ -67,9 +68,36 @@ const BalanceBadge = () => {
     try {
       await claimDailyReward();
       setIsPanelOpen(false);
+      // Show success toast instead of alert
+      toast.success('100 Coins Claimed Successfully!', {
+        duration: 4000,
+        icon: '🪙',
+        style: {
+          background: '#10b981',
+          color: '#fff',
+        },
+      });
     } catch (error) {
       console.error('Error claiming reward:', error);
-      alert(error.message || 'Failed to claim reward. Please try again.');
+      
+      // Hide database-related errors from users
+      let userMessage = 'Failed to claim reward. Please try again.';
+      
+      // Check for specific database errors and hide them
+      if (error.message && !error.message.includes('database') && !error.message.includes('datastore')) {
+        // Only show user-friendly errors, not database setup issues
+        if (error.message.includes('already claimed') || error.message.includes('Next reward')) {
+          userMessage = error.message;
+        }
+      }
+      
+      toast.error(userMessage, {
+        duration: 4000,
+        style: {
+          background: '#ef4444',
+          color: '#fff',
+        },
+      });
     } finally {
       setIsClaimingReward(false);
     }

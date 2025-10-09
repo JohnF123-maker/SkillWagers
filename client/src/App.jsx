@@ -10,8 +10,10 @@ import Wagers from './pages/Wagers';
 import Wagering from './pages/Wagering';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-import LoginRegister from './pages/LoginRegister';
+import ForgotPassword from './pages/ForgotPassword';
 import Profile from './pages/Profile';
+import Statistics from './pages/Statistics';
+import Settings from './pages/Settings';
 import CreateChallenge from './pages/CreateChallenge';
 import Marketplace from './pages/Marketplace';
 import ChallengeDetail from './pages/ChallengeDetail';
@@ -45,12 +47,28 @@ function App() {
               />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
-              <Route path="/auth" element={<LoginRegister />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route 
                 path="/profile" 
                 element={
                   <AuthGuard>
                     <Profile />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/statistics" 
+                element={
+                  <AuthGuard>
+                    <Statistics />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/settings" 
+                element={
+                  <AuthGuard>
+                    <Settings />
                   </AuthGuard>
                 } 
               />

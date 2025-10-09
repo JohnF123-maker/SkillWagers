@@ -13,6 +13,14 @@ function HowItWorksCard({ item, index }) {
   // Toggle for mobile tap
   const toggleFlip = () => setIsFlipped(prev => !prev);
 
+  // Handle keyboard events for accessibility
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggleFlip();
+    }
+  };
+
   // Optional accent ring colors
   const ringColors = {
     0: 'ring-blue-500/40',
@@ -23,27 +31,22 @@ function HowItWorksCard({ item, index }) {
 
   return (
     <div 
-      className="flip-card w-full aspect-square cursor-pointer"
+      className="how-card w-full aspect-square cursor-pointer"
       onClick={toggleFlip}
+      onKeyDown={handleKeyDown}
       onMouseEnter={() => setIsFlipped(true)}
       onMouseLeave={() => setIsFlipped(false)}
-      style={{ perspective: '1000px' }}
+      tabIndex={0}
+      role="button"
+      aria-expanded={isFlipped}
+      aria-label={`How it works card: ${item.title}`}
     >
       <div 
-        className={`flip-card-inner relative w-full h-full ${isFlipped ? 'flipped' : ''}`}
-        style={{
-          transformStyle: 'preserve-3d',
-          transition: 'transform 0.3s ease-in-out',
-          transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
-        }}
+        className={`how-card-inner relative w-full h-full ${isFlipped ? 'flipped' : ''}`}
       >
         {/* Front face */}
         <div 
-          className={`flip-card-front absolute w-full h-full rounded-2xl bg-neutral-900 text-white ring-1 ring-white/10 ${ringColors[index]} flex flex-col items-center justify-center gap-2`}
-          style={{
-            backfaceVisibility: 'hidden',
-            WebkitBackfaceVisibility: 'hidden'
-          }}
+          className={`how-card-face how-card-front absolute w-full h-full rounded-2xl bg-gray-800 text-white ring-1 ring-white/10 ${ringColors[index]} flex flex-col items-center justify-center gap-2`}
         >
           <span className="text-4xl">{item.frontIcon}</span>
           <span className="text-lg font-semibold text-center px-2">{item.title}</span>
@@ -51,14 +54,10 @@ function HowItWorksCard({ item, index }) {
 
         {/* Back face */}
         <div 
-          className="flip-card-back absolute w-full h-full rounded-2xl bg-gray-50 text-gray-800 flex items-center justify-center px-4 text-center"
-          style={{
-            backfaceVisibility: 'hidden',
-            WebkitBackfaceVisibility: 'hidden',
-            transform: 'rotateY(180deg)'
-          }}
+          className={`how-card-face how-card-back absolute w-full h-full rounded-2xl bg-gray-800 text-white flex flex-col items-center justify-center px-4 text-center ring-1 ring-white/10 ${ringColors[index]}`}
         >
-          <p className="text-sm font-medium leading-relaxed">{item.desc}</p>
+          <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+          <p className="text-sm leading-relaxed">{item.desc}</p>
         </div>
       </div>
     </div>

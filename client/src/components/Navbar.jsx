@@ -8,6 +8,9 @@ import {
   HomeIcon, 
   ShoppingBagIcon, 
   CreditCardIcon, 
+  UserIcon,
+  ChartBarIcon,
+  CogIcon,
   Bars3Icon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
@@ -19,10 +22,13 @@ const Navbar = () => {
   const navLinks = [
     { path: '/', label: 'Home', icon: HomeIcon },
     { path: '/wagering', label: 'Wagering', icon: CreditCardIcon },
-    { path: '/marketplace', label: 'Marketplace', icon: ShoppingBagIcon },
     ...(currentUser ? [
       { path: '/wagers', label: 'My Wagers', icon: CreditCardIcon },
-    ] : [])
+      { path: '/profile', label: 'Profile', icon: UserIcon },
+      { path: '/statistics', label: 'Statistics', icon: ChartBarIcon },
+      { path: '/settings', label: 'Settings', icon: CogIcon },
+    ] : []),
+    { path: '/marketplace', label: 'Marketplace', icon: ShoppingBagIcon },
   ];
 
   return (
@@ -32,7 +38,7 @@ const Navbar = () => {
           {/* Logo */}
           <NavLink to="/" className="flex items-center gap-2">
             <img 
-              src="/icons/skillwagers-192.png" 
+              src="/icons/skillwagers-512.png" 
               alt="SkillWagers" 
               className="h-6 w-6" 
             />

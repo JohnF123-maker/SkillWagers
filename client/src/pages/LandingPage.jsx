@@ -191,27 +191,27 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gray-800">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Ready to Join Our <span className="gaming-text">Beta</span>?
-          </h2>
-          <p className="text-xl text-gray-200 mb-8">
-            Be among the first to test our skill-based competition platform and help shape its future.
-          </p>
-          {!currentUser && (
+      {/* CTA Section - Only show to non-logged-in users */}
+      {!currentUser && (
+        <section className="py-20 bg-gray-800">
+          <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+              Ready to Join Our <span className="gaming-text">Beta</span>?
+            </h2>
+            <p className="text-xl text-gray-200 mb-8">
+              Be among the first to test our skill-based competition platform and help shape its future.
+            </p>
             <Link to="/login" className="btn-accent text-lg px-8 py-4 inline-block">
               Join SkillWagers Today
             </Link>
-          )}
-          <div className="mt-8 p-4 bg-dark-700 rounded-lg border border-yellow-500 max-w-2xl mx-auto">
-            <p className="text-yellow-300 text-sm font-medium">
-              ⚠️ Beta Notice: SkillWagers is currently in Beta. All currency used in this version is simulated and has no real-world value.
-            </p>
+            <div className="mt-8 p-4 bg-dark-700 rounded-lg border border-yellow-500 max-w-2xl mx-auto">
+              <p className="text-yellow-300 text-sm font-medium">
+                ⚠️ Beta Notice: SkillWagers is currently in Beta. All currency used in this version is simulated and has no real-world value.
+              </p>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 };

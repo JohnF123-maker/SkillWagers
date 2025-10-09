@@ -9,9 +9,8 @@ const PasswordInput = ({ label = "Password", name, error = "", ...rest }) => {
     <div className="w-full">
       <div className="flex items-center justify-between">
         <label 
-          className="block text-sm font-medium mb-1" 
+          className="auth-label" 
           htmlFor={name}
-          style={{ color: 'white' }}
         >
           {label}
         </label>
@@ -22,48 +21,14 @@ const PasswordInput = ({ label = "Password", name, error = "", ...rest }) => {
           id={name}
           name={name}
           type={show ? "text" : "password"}
-          style={{
-            backgroundColor: 'white',
-            color: 'black',
-            border: error ? '1px solid #ef4444' : '1px solid #d1d5db',
-            borderRadius: '6px',
-            padding: '12px 48px 12px 16px',
-            width: '100%',
-            fontSize: '14px',
-            outline: 'none'
-          }}
-          onFocus={(e) => {
-            e.target.style.borderColor = error ? '#ef4444' : '#f59e0b';
-            e.target.style.boxShadow = error ? '0 0 0 2px rgba(239, 68, 68, 0.2)' : '0 0 0 2px rgba(245, 158, 11, 0.2)';
-          }}
-          onBlur={(e) => {
-            e.target.style.borderColor = error ? '#ef4444' : '#d1d5db';
-            e.target.style.boxShadow = 'none';
-          }}
+          className="auth-input auth-input-password"
           autoComplete="current-password"
           {...rest}
         />
         <button
           type="button"
           onClick={() => setShow(!show)}
-          style={{
-            position: 'absolute',
-            right: '8px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            padding: '8px',
-            border: 'none',
-            background: 'transparent',
-            color: '#6b7280',
-            cursor: 'pointer',
-            outline: 'none'
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.color = '#374151';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.color = '#6b7280';
-          }}
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 border-none bg-transparent text-gray-500 hover:text-gray-700 cursor-pointer outline-none"
           aria-label={show ? "Hide password" : "Show password"}
         >
           {show ? (
