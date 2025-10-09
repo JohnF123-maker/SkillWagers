@@ -19,7 +19,6 @@ client/node_modules/
 server/node_modules/
 
 build/          # CRA build output
-/build          # CRA build input
 dist/           # Vite/TS build output
 client/build/   # Client build files
 server/build/   # Server build files
