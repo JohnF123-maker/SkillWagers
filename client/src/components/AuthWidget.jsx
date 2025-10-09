@@ -70,19 +70,19 @@ const AuthWidget = () => {
       label: 'Profile',
       icon: UserIcon,
       href: '/profile',
-      description: 'Update picture and username'
+      description: 'View your profile information'
     },
     {
       label: 'Statistics', 
       icon: ChartBarIcon,
-      href: '/profile?tab=stats',
+      href: '/statistics',
       description: 'View your performance stats'
     },
     {
       label: 'Settings',
       icon: CogIcon, 
-      href: '/profile?tab=settings',
-      description: 'Email, password, age verification'
+      href: '/settings',
+      description: 'Account settings and preferences'
     }
   ];
 

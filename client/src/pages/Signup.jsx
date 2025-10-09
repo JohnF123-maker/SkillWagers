@@ -213,16 +213,16 @@ const Signup = () => {
               error={errors.confirmPassword}
             />
 
-            <div className="flex items-start gap-2">
+            <div className="flex items-center gap-3">
               <input
                 id="agreeToTerms"
                 name="agreeToTerms"
                 type="checkbox"
-                className="h-3.5 w-3.5 mt-0.5 text-primaryAccent focus:ring-primaryAccent focus:ring-offset-0 focus:ring-2 border-gray-400 rounded bg-white"
+                className="h-4 w-4 text-primaryAccent focus:ring-primaryAccent focus:ring-offset-0 focus:ring-2 border-gray-400 rounded bg-white flex-shrink-0"
                 {...register('agreeToTerms')}
                 required
               />
-              <label htmlFor="agreeToTerms" className="block text-sm leading-relaxed" style={{ color: 'white' }}>
+              <label htmlFor="agreeToTerms" className="text-sm leading-relaxed text-white">
                 I agree to the{' '}
                 <Link to="/terms" className="text-primaryAccent hover:text-purple-400">
                   Terms and Conditions

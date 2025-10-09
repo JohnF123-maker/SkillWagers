@@ -8,9 +8,6 @@ import {
   HomeIcon, 
   ShoppingBagIcon, 
   CreditCardIcon, 
-  UserIcon,
-  ChartBarIcon,
-  CogIcon,
   Bars3Icon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
@@ -21,12 +18,9 @@ const Navbar = () => {
 
   const navLinks = [
     { path: '/', label: 'Home', icon: HomeIcon },
-    { path: '/wagering', label: 'Wagering', icon: CreditCardIcon },
+    { path: '/wagering', label: 'Browse Wagering', icon: CreditCardIcon },
     ...(currentUser ? [
       { path: '/wagers', label: 'My Wagers', icon: CreditCardIcon },
-      { path: '/profile', label: 'Profile', icon: UserIcon },
-      { path: '/statistics', label: 'Statistics', icon: ChartBarIcon },
-      { path: '/settings', label: 'Settings', icon: CogIcon },
     ] : []),
     { path: '/marketplace', label: 'Marketplace', icon: ShoppingBagIcon },
   ];

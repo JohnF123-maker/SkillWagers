@@ -81,7 +81,7 @@ const LandingPage = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {currentUser ? (
                 <>
-                  <Link to="/wagers" className="btn-primary text-lg px-8 py-4">
+                  <Link to="/wagering" className="btn-primary text-lg px-8 py-4">
                     Browse Challenges
                   </Link>
                   <Link to="/create-challenge" className="btn-outline text-lg px-8 py-4">
