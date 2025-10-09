@@ -70,13 +70,16 @@ firebase-debug.*.log
 *-firebase-adminsdk-*.json
 service-account-key.json
 
-# Firebase configuration files (project-specific)
-.firebaserc
-firebase.json
-firestore.rules
-firestore.indexes.json
-storage.rules
-functions/
+# Firebase Functions build output
+functions/lib/
+functions/node_modules/
+
+# Keep Firebase configuration files for deployment
+# .firebaserc
+# firebase.json 
+# firestore.rules
+# firestore.indexes.json
+# Keep functions source code but ignore builds
 
 # Keep Firebase client config as examples only
 !firebase.example.json

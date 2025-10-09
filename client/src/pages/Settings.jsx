@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../components/AuthContext';
-import DisplayNameOnceForm from '../components/Profile/DisplayNameOnceForm';
 import ChangePasswordWithEmail from '../components/Profile/ChangePasswordWithEmail';
 import SignOutConfirm from '../components/Profile/SignOutConfirm';
 import { 
-  UserIcon,
   ShieldCheckIcon,
   ExclamationTriangleIcon,
   EnvelopeIcon,
@@ -36,11 +34,11 @@ const Settings = () => {
         </div>
 
         <div className="space-y-8">
-          {/* Profile Settings */}
+          {/* Account Settings */}
           <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
             <h2 className="text-xl font-bold text-white mb-6 flex items-center">
-              <UserIcon className="h-5 w-5 mr-2" />
-              Profile Settings
+              <CogIcon className="h-5 w-5 mr-2" />
+              Account Settings
             </h2>
             
             <div className="space-y-6">
@@ -57,14 +55,6 @@ const Settings = () => {
                 <p className="text-gray-500 text-sm mt-1">
                   Email changes are not currently supported in Beta
                 </p>
-              </div>
-
-              {/* Display Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Display Name
-                </label>
-                <DisplayNameOnceForm />
               </div>
             </div>
           </div>

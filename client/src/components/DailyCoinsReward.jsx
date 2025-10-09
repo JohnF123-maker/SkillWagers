@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
-import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { httpsCallable } from 'firebase/functions';
+import { functions } from '../firebase';
 import { GiftIcon, ClockIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
@@ -13,39 +13,38 @@ const DailyCoinsReward = () => {
   const [claiming, setClaiming] = useState(false);
 
   const checkClaimStatus = useCallback(async () => {
-    if (!currentUser?.uid) {
-      console.warn('No current user available for checking claim status');
+    if (!currentUser?.uid || !userProfile) {
       return;
     }
 
     try {
       setLoading(true);
-      const dailyRewardRef = doc(db, 'dailyRewards', currentUser.uid);
-      const dailyRewardDoc = await getDoc(dailyRewardRef);
       
-      if (dailyRewardDoc.exists()) {
-        const data = dailyRewardDoc.data();
-        const lastClaimTime = data.lastClaimTime?.toDate();
+      const lastClaimDate = userProfile.lastDailyRewardClaim?.toDate();
+      
+      if (lastClaimDate) {
+        const now = new Date();
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
         
-        if (lastClaimTime) {
-          const now = new Date();
-          const timeDiff = now - lastClaimTime;
-          const hoursPassed = timeDiff / (1000 * 60 * 60);
-          
-          if (hoursPassed >= 24) {
-            setCanClaim(true);
-            setNextClaimTime(null);
-          } else {
-            setCanClaim(false);
-            const nextClaim = new Date(lastClaimTime.getTime() + (24 * 60 * 60 * 1000));
-            setNextClaimTime(nextClaim);
-          }
+        const lastClaim = new Date(lastClaimDate);
+        lastClaim.setHours(0, 0, 0, 0);
+        
+        if (lastClaim.getTime() === today.getTime()) {
+          // Already claimed today
+          setCanClaim(false);
+          const nextClaim = new Date(today);
+          nextClaim.setDate(nextClaim.getDate() + 1);
+          setNextClaimTime(nextClaim);
         } else {
+          // Can claim today
           setCanClaim(true);
+          setNextClaimTime(null);
         }
       } else {
         // First time claiming
         setCanClaim(true);
+        setNextClaimTime(null);
       }
     } catch (error) {
       console.error('Error checking claim status:', error);
@@ -53,51 +52,35 @@ const DailyCoinsReward = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentUser?.uid]);
+  }, [currentUser?.uid, userProfile]);
 
   useEffect(() => {
-    if (currentUser) {
+    if (currentUser && userProfile) {
       checkClaimStatus();
     }
-  }, [currentUser, checkClaimStatus]);
+  }, [currentUser, userProfile, checkClaimStatus]);
 
   const claimDailyCoins = async () => {
     if (!canClaim || claiming || !currentUser?.uid) return;
 
     try {
       setClaiming(true);
-      const now = new Date();
       
-      // Update user's balance
-      const userRef = doc(db, 'users', currentUser.uid);
-      const currentBalance = userProfile?.betaBalance || 0;
-      const newBalance = currentBalance + 100;
+      // Call Cloud Function to claim daily reward
+      const claimDailyReward = httpsCallable(functions, 'claimDailyReward');
+      const result = await claimDailyReward({});
       
-      await updateDoc(userRef, {
-        betaBalance: newBalance
-      });
+      if (result.data.success) {
+        setCanClaim(false);
+        const nextClaim = new Date();
+        nextClaim.setDate(nextClaim.getDate() + 1);
+        nextClaim.setHours(0, 0, 0, 0);
+        setNextClaimTime(nextClaim);
 
-      // Record the claim
-      const dailyRewardRef = doc(db, 'dailyRewards', currentUser.uid);
-      await setDoc(dailyRewardRef, {
-        lastClaimTime: now,
-        totalClaimed: (userProfile?.totalDailyClaimed || 0) + 100,
-        claimCount: (userProfile?.dailyClaimCount || 0) + 1
-      }, { merge: true });
-
-      // Update user profile with daily claim stats
-      await updateDoc(userRef, {
-        totalDailyClaimed: (userProfile?.totalDailyClaimed || 0) + 100,
-        dailyClaimCount: (userProfile?.dailyClaimCount || 0) + 1
-      });
-
-      setCanClaim(false);
-      const nextClaim = new Date(now.getTime() + (24 * 60 * 60 * 1000));
-      setNextClaimTime(nextClaim);
-
-      toast.success('🎉 Claimed 100 SIM! Come back in 24 hours for more!', {
-        duration: 4000
-      });
+        toast.success(result.data.message, { duration: 4000 });
+      } else {
+        throw new Error(result.data.message || 'Failed to claim daily reward');
+      }
 
     } catch (error) {
       console.error('Error claiming daily coins:', error);

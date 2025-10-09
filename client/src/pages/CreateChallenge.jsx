@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { 
-  collection, 
-  serverTimestamp,
-  runTransaction,
-  doc,
-  increment
-} from 'firebase/firestore';
-import { db } from '../firebase';
+import { httpsCallable } from 'firebase/functions';
+import { functions } from '../firebase';
 import toast from 'react-hot-toast';
 
 const CreateChallenge = () => {
@@ -18,10 +12,9 @@ const CreateChallenge = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    game: '',
-    stakeAmount: '',
-    rules: '',
+    wagerAmount: '',
     proofRequirements: '',
+    timeframe: 7, // days
     category: 'gaming'
   });
   
@@ -107,71 +100,40 @@ const CreateChallenge = () => {
       return;
     }
 
-    const stakeAmount = parseFloat(formData.stakeAmount);
-    if (stakeAmount <= 0) {
-      toast.error('Stake amount must be greater than 0');
+    const wagerAmount = parseFloat(formData.wagerAmount);
+    if (wagerAmount <= 0) {
+      toast.error('Wager amount must be greater than 0');
       return;
     }
 
-    if (stakeAmount > (userProfile?.betaBalance || 0)) {
-      toast.error('Insufficient balance for this stake amount');
+    if (wagerAmount > (userProfile?.betaBalance || 0)) {
+      toast.error('Insufficient balance for this wager amount');
       return;
     }
 
     try {
       setLoading(true);
 
-      // Use transaction to ensure atomic operation: deduct balance + create challenge
-      const result = await runTransaction(db, async (transaction) => {
-        const userRef = doc(db, 'users', currentUser.uid);
-        const userDoc = await transaction.get(userRef);
-        
-        if (!userDoc.exists()) {
-          throw new Error('User document not found');
-        }
-        
-        const userData = userDoc.data();
-        const currentBalance = userData.betaBalance || 0;
-        
-        // Double-check balance within transaction
-        if (currentBalance < stakeAmount) {
-          throw new Error('Insufficient balance for this stake amount');
-        }
-        
-        // Deduct stake amount from user balance
-        transaction.update(userRef, {
-          betaBalance: increment(-stakeAmount)
-        });
-        
-        const challengeData = {
-          ...formData,
-          stakeAmount: stakeAmount,
-          creatorId: currentUser.uid,
-          creatorName: userProfile.displayName || currentUser.displayName,
-          creatorEmail: currentUser.email,
-          status: 'open',
-          acceptorId: null,
-          acceptorName: null,
-          proofSubmitted: false,
-          disputeRaised: false,
-          winner: null,
-          escrowAmount: stakeAmount,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        };
-
-        // Create challenge document
-        const challengeRef = doc(collection(db, 'challenges'));
-        transaction.set(challengeRef, challengeData);
-        
-        return { challengeId: challengeRef.id, newBalance: currentBalance - stakeAmount };
+      // Call Cloud Function to create wager
+      const createWager = httpsCallable(functions, 'createWager');
+      const result = await createWager({
+        title: formData.title,
+        description: formData.description,
+        wagerAmount: wagerAmount,
+        category: formData.category,
+        proofRequirements: formData.proofRequirements,
+        timeframe: formData.timeframe
       });
       
-      toast.success(`Challenge created! ${stakeAmount} coins escrowed. Remaining balance: ${result.newBalance}`);
-      navigate(`/challenge/${result.challengeId}`);
+      if (result.data.success) {
+        toast.success(`Challenge created! ${wagerAmount} coins escrowed.`);
+        navigate(`/challenge/${result.data.challengeId}`);
+      } else {
+        throw new Error(result.data.message || 'Failed to create challenge');
+      }
     } catch (error) {
       console.error('Error creating challenge:', error);
-      toast.error('Failed to create challenge');
+      toast.error(error.message || 'Failed to create challenge');
     } finally {
       setLoading(false);
     }
@@ -258,14 +220,14 @@ const CreateChallenge = () => {
               </label>
               <input
                 type="number"
-                name="stakeAmount"
-                value={formData.stakeAmount}
+                name="wagerAmount"
+                value={formData.wagerAmount}
                 onChange={handleInputChange}
                 required
                 min="1"
                 step="1"
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primaryAccent"
-                placeholder="Enter stake amount"
+                placeholder="Enter wager amount"
               />
               <p className="text-xs text-gray-400 mt-1">
                 Your balance: {userProfile?.betaBalance || 0} SIM

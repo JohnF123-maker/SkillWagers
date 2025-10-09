@@ -27,6 +27,24 @@
 }
 
 @layer components {
+  .tc-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 16px;
+    line-height: 1.4;
+  }
+  
+  .tc-row input[type="checkbox"] {
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+  
+  .tc-row label {
+    flex: 1;
+    margin: 0;
+  }
+
   .btn-primary {
     @apply bg-brandAccent hover:bg-brandAccent active:bg-brandAccent text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 focus:ring-brandAccent;
   }
