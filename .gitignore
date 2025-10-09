@@ -18,13 +18,16 @@ node_modules/
 client/node_modules/
 server/node_modules/
 
-build/          # CRA build output
-dist/           # Vite/TS build output
-client/build/   # Client build files
-server/build/   # Server build files
-.next/          # Next.js
+# Build outputs
+build/
+dist/
+client/build/
+client/build/*
+client/build/**/*
+server/build/
+.next/
 .out/
-.vercel/        # Vercel build artifacts
+.vercel/
 coverage/
 
 # ─────────────────────────────
