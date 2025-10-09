@@ -24,6 +24,7 @@ client/build/   # Client build files
 server/build/   # Server build files
 .next/          # Next.js
 .out/
+.vercel/        # Vercel build artifacts
 coverage/
 
 # ─────────────────────────────
