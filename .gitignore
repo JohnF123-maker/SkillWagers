@@ -32,7 +32,8 @@ coverage/
 # ─────────────────────────────
 # Do NOT ignore client/public (needed for CRA builds)
 # Ignore root-level public/ (for Gatsby, etc.)
-/public/
+# /public/
+# Note: Commented out /public/ to avoid conflicts with client folder
 !client/public/
 !client/public/**
 
