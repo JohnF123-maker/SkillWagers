@@ -180,16 +180,6 @@ This is a commercial platform project. For business inquiries or technical quest
 
 Proprietary - All rights reserved. This project is for commercial use by authorized parties only.
 
-## 🎉 Success Stories
-
-*"Made $500 in my first month just playing the games I love!"* - Pro Gamer
-
-*"Finally a platform where skill actually pays. Clean interface, fast payouts."* - Competitive Player
-
-*"Best esports platform I've used. Fair disputes and great community."* - Tournament Player
-
 ---
 
 **Ready to turn your gaming skills into real money? Join SkillWagers today!**
-
-*Built with ❤️ for the gaming community*
