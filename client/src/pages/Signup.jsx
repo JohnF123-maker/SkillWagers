@@ -218,20 +218,12 @@ const Signup = () => {
                 id="terms"
                 name="agreeToTerms"
                 type="checkbox"
-                className="h-4 w-4 text-primaryAccent focus:ring-primaryAccent focus:ring-offset-0 focus:ring-1 border-gray-400 rounded bg-white flex-shrink-0"
+                className="w-4 h-4 text-primaryAccent focus:ring-primaryAccent focus:ring-offset-0 focus:ring-1 border-gray-400 rounded bg-white flex-shrink-0 mt-0.5"
                 {...register('agreeToTerms')}
                 required
               />
               <label htmlFor="terms" className="text-sm leading-5 text-white cursor-pointer">
-                I agree to the{' '}
-                <a href="/terms.html" target="_blank" rel="noreferrer" className="text-primaryAccent hover:text-purple-400 underline">
-                  Terms and Conditions
-                </a>{' '}
-                and{' '}
-                <a href="/privacy.html" target="_blank" rel="noreferrer" className="text-primaryAccent hover:text-purple-400 underline">
-                  Privacy Policy
-                </a>.{' '}
-                You must agree to the terms and conditions.
+                I agree to the Terms and Conditions and Privacy Policy. You must agree to the terms and conditions.
               </label>
             </div>
             {errors.agreeToTerms && (

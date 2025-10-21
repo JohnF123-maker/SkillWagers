@@ -18,6 +18,7 @@ import {
   runTransaction
 } from 'firebase/firestore';
 import { auth, db } from '../firebase';
+import { logSigninLocation } from '../utils/locationLogger';
 
 const AuthContext = createContext();
 
@@ -122,7 +123,14 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    return userCredential.user;
+    const user = userCredential.user;
+    
+    // Log signin location for analytics (non-blocking)
+    logSigninLocation(user, db).catch(error => {
+      console.warn('Failed to log signin location:', error);
+    });
+    
+    return user;
   };
 
   const register = async (email, password, displayName, dateOfBirth) => {
@@ -155,6 +163,12 @@ export const AuthProvider = ({ children }) => {
     });
     
     setUserProfile(userData);
+    
+    // Log signin location for analytics (non-blocking)
+    logSigninLocation(user, db).catch(error => {
+      console.warn('Failed to log signin location:', error);
+    });
+    
     return user;
   };
 

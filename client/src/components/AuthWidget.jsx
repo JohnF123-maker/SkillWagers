@@ -138,7 +138,7 @@ const AuthWidget = () => {
             <div className="border-t border-gray-700 mt-1 pt-1">
               <button
                 onClick={handleSignOut}
-                className={`flex items-center w-full px-4 py-3 text-sm transition-colors ${
+                className={`flex items-center w-full px-4 py-3 text-sm transition-colors text-left ${
                   signOutClicked 
                     ? 'bg-red-600 text-white hover:bg-red-700' 
                     : 'text-gray-300 hover:bg-gray-700 hover:text-white'

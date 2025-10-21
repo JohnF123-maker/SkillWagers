@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './components/AuthContext';
 import Navbar from './components/Navbar';
+import DisclaimerBanner from './components/DisclaimerBanner';
 import AuthGuard from './components/AuthGuard';
 import BetaModel from './components/BetaModel';
 import LandingPage from './pages/LandingPage';
@@ -20,6 +21,12 @@ import ChallengeDetail from './pages/ChallengeDetail';
 import Wallet from './pages/Wallet';
 import ProofDispute from './pages/ProofDispute';
 import AdminPanel from './pages/AdminPanel';
+import DataCollection from './pages/DataCollection';
+import BetaTestingTerms from './pages/BetaTestingTerms';
+import TermsAndConditions from './pages/TermsAndConditions';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import ResponsibleGamingPolicy from './pages/ResponsibleGamingPolicy';
+import TermsOfUse from './pages/TermsOfUse';
 
 function App() {
   return (
@@ -31,9 +38,10 @@ function App() {
         }}
       >
         <div className="min-h-screen bg-dark-900">
+          <DisclaimerBanner />
           <Navbar />
           <BetaModel />
-          <main className="pt-16">
+          <main className="pt-24">
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/wagering" element={<Wagering />} />
@@ -106,6 +114,14 @@ function App() {
                   </AuthGuard>
                 } 
               />
+              
+              {/* Legal Pages */}
+              <Route path="/legal/data-collection" element={<DataCollection />} />
+              <Route path="/legal/beta-testing-terms" element={<BetaTestingTerms />} />
+              <Route path="/legal/terms-and-conditions" element={<TermsAndConditions />} />
+              <Route path="/legal/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/legal/responsible-gaming" element={<ResponsibleGamingPolicy />} />
+              <Route path="/legal/terms-of-use" element={<TermsOfUse />} />
             </Routes>
           </main>
           <Toaster 

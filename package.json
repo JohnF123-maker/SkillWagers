@@ -4,13 +4,13 @@
   "description": "SkillWagers - Skill-based gaming platform with escrow and dispute resolution",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "cd server && node index.js",
+    "dev": "npm run client",
     "client": "cd client && npm start",
     "build": "cd client && npm run build",
+    "build-functions": "cd functions && npm run build",
     "install-client": "cd client && npm install",
-    "install-server": "cd server && npm install",
-    "install-all": "npm install && npm run install-client && npm run install-server"
+    "install-functions": "cd functions && npm install",
+    "install-all": "npm run install-client && npm run install-functions"
   },
   "keywords": [
     "gaming",
