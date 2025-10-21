@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './components/AuthContext';
 import Navbar from './components/Navbar';
 import DisclaimerBanner from './components/DisclaimerBanner';
+import AppFooter from './components/AppFooter';
 import AuthGuard from './components/AuthGuard';
 import BetaModel from './components/BetaModel';
 import LandingPage from './pages/LandingPage';
@@ -27,6 +28,7 @@ import TermsAndConditions from './pages/TermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import ResponsibleGamingPolicy from './pages/ResponsibleGamingPolicy';
 import TermsOfUse from './pages/TermsOfUse';
+import Contact from './pages/Contact';
 
 function App() {
   return (
@@ -122,8 +124,12 @@ function App() {
               <Route path="/legal/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/legal/responsible-gaming" element={<ResponsibleGamingPolicy />} />
               <Route path="/legal/terms-of-use" element={<TermsOfUse />} />
+              
+              {/* Contact Page */}
+              <Route path="/contact" element={<Contact />} />
             </Routes>
           </main>
+          <AppFooter />
           <Toaster 
             position="top-right"
             toastOptions={{

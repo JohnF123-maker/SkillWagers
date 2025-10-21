@@ -57,11 +57,6 @@ const ChallengeDetail = () => {
       return;
     }
 
-    if (!userProfile.ageVerified) {
-      toast.error('You must verify your age before accepting challenges');
-      return;
-    }
-
     if (challenge.stakeAmount > (userProfile.betaBalance || 0)) {
       toast.error('Insufficient balance to accept this challenge');
       return;

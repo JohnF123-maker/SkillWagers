@@ -213,21 +213,27 @@ const Signup = () => {
               error={errors.confirmPassword}
             />
 
-            <div className="tc-row">
+            <div className="inline-flex items-start gap-2">
               <input
-                id="terms"
-                name="agreeToTerms"
+                id="agreeTerms"
                 type="checkbox"
-                className="w-4 h-4 text-primaryAccent focus:ring-primaryAccent focus:ring-offset-0 focus:ring-1 border-gray-400 rounded bg-white flex-shrink-0 mt-0.5"
+                className="h-4 w-4 mt-0.5 cursor-pointer"
                 {...register('agreeToTerms')}
+                aria-labelledby="termsLabel"
                 required
               />
-              <label htmlFor="terms" className="text-sm leading-5 text-white cursor-pointer">
-                I agree to the Terms and Conditions and Privacy Policy. You must agree to the terms and conditions.
-              </label>
+              <div className="text-sm leading-5 text-white" id="termsLabel" role="note">
+                I agree to the{" "}
+                <Link to="/legal/terms-and-conditions" className="underline hover:opacity-80">Terms and Conditions</Link>
+                {" "}and{" "}
+                <Link to="/legal/privacy-policy" className="underline hover:opacity-80">Privacy Policy</Link>.
+                {" "}You must agree to the terms and conditions.
+              </div>
             </div>
             {errors.agreeToTerms && (
-              <p className="text-red-500 text-xs mt-1 mb-3">{errors.agreeToTerms.message}</p>
+              <p className="text-red-500 text-xs mt-1">
+                You must agree to the Terms and Conditions and Privacy Policy to continue.
+              </p>
             )}
 
             <div>

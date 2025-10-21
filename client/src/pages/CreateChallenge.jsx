@@ -88,11 +88,6 @@ const CreateChallenge = () => {
       return;
     }
 
-    if (!userProfile?.ageVerified) {
-      toast.error('You must verify your age before creating challenges. Go to Profile → Settings to verify your age.');
-      return;
-    }
-
     // Validate skill-based policy
     const policyErrors = validateSkillBasedPolicy();
     if (policyErrors.length > 0) {

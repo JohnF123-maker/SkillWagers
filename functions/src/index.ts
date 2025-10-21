@@ -45,11 +45,6 @@ export const createWager = onCall(async (request) => {
       throw new HttpsError('failed-precondition', 'Insufficient balance');
     }
     
-    // Check age verification
-    if (!userProfile.ageVerified) {
-      throw new HttpsError('failed-precondition', 'Age verification required');
-    }
-    
     // Create challenge document
     const challengeRef = db.collection('challenges').doc();
     const challengeData = {
