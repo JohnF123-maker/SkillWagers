@@ -17,13 +17,12 @@ const Signup = () => {
 
   const { register, handleSubmit, formState: { errors }, setError } = useForm({
     resolver: zodResolver(registerSchema),
-    mode: "onBlur",  // Validate when field loses focus
-    reValidateMode: "onChange"  // Re-validate on change after first validation
+    mode: "onBlur",
+    reValidateMode: "onChange"
   });
 
   const currentYear = new Date().getFullYear();
 
-  // Redirect authenticated users
   useEffect(() => {
     if (currentUser) {
       navigate('/', { replace: true });
@@ -44,7 +43,6 @@ const Signup = () => {
       navigate('/');
     } catch (error) {
       console.error('Registration error:', error);
-      
       if (error.code === 'auth/email-already-in-use') {
         setError('email', { message: 'This email address is already in use' });
       } else if (error.code === 'auth/weak-password') {
@@ -163,30 +161,18 @@ const Signup = () => {
                 max: `${currentYear}-12-31`,
                 onInput: (e) => {
                   let value = e.target.value;
-                  // Remove any non-digit and non-hyphen characters
                   value = value.replace(/[^\d-]/g, '');
-                  
-                  // Enforce YYYY-MM-DD format with 4-digit year maximum
-                  if (value.length > 10) {
-                    value = value.slice(0, 10);
-                  }
-                  
-                  // Prevent typing more than 4 digits for year
+                  if (value.length > 10) value = value.slice(0, 10);
                   const yearMatch = value.match(/^(\d{0,4})/);
                   if (yearMatch && yearMatch[1].length > 4) {
                     value = yearMatch[1].slice(0, 4) + value.slice(yearMatch[1].length);
                   }
-                  
                   e.target.value = value;
                 },
                 onKeyPress: (e) => {
-                  // Prevent entering more than 4 digits for year
                   const value = e.target.value;
                   const cursorPos = e.target.selectionStart;
-                  
-                  // If we're in the year section (first 4 characters) and already have 4 digits
                   if (cursorPos <= 4 && value.replace(/[^\d]/g, '').length >= 4 && cursorPos < 4) {
-                    // Only allow if we're replacing existing characters
                     if (e.target.selectionStart === e.target.selectionEnd) {
                       e.preventDefault();
                     }
@@ -213,28 +199,36 @@ const Signup = () => {
               error={errors.confirmPassword}
             />
 
-            <div className="inline-flex items-start gap-2">
-              <input
-                id="agreeTerms"
-                type="checkbox"
-                className="h-4 w-4 mt-0.5 cursor-pointer"
-                {...register('agreeToTerms')}
-                aria-labelledby="termsLabel"
-                required
-              />
-              <div className="text-sm leading-5 text-white" id="termsLabel" role="note">
-                I agree to the{" "}
-                <Link to="/legal/terms-and-conditions" className="underline hover:opacity-80">Terms and Conditions</Link>
-                {" "}and{" "}
-                <Link to="/legal/privacy-policy" className="underline hover:opacity-80">Privacy Policy</Link>.
-                {" "}You must agree to the terms and conditions.
-              </div>
-            </div>
-            {errors.agreeToTerms && (
-              <p className="text-red-500 text-xs mt-1">
-                You must agree to the Terms and Conditions and Privacy Policy to continue.
-              </p>
-            )}
+{/* ===== Fixed Terms Checkbox (compact, left-aligned) ===== */}
+<div className="mt-2">
+  <div className="checkbox-row">
+    <input
+      id="agreeTerms"
+      type="checkbox"
+      className="flex-shrink-0 focus:outline-none focus:ring-0"
+      {...register('agreeToTerms')}
+      aria-labelledby="termsLabel"
+      required
+    />
+    <div id="termsLabel" className="terms-text" role="note">
+      I agree to the{' '}
+      <Link to="/legal/terms-and-conditions" className="underline hover:opacity-80">
+        Terms and Conditions
+      </Link>
+      {' '}and{' '}
+      <Link to="/legal/privacy-policy" className="underline hover:opacity-80">
+        Privacy Policy
+      </Link>.
+    </div>
+  </div>
+
+  {errors.agreeToTerms && (
+    <p className="text-red-500 text-xs mt-1">
+      You must agree to the Terms and Conditions and Privacy Policy to continue.
+    </p>
+  )}
+</div>
+{/* ======================================================== */}
 
             <div>
               <button

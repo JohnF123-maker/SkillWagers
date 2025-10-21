@@ -35,7 +35,7 @@ const Wagering = () => {
       
       let q = query(
         collection(db, 'challenges'),
-        where('status', '==', 'open'),
+        where('status', '==', 'approved'),
         orderBy('createdAt', 'desc'),
         limitQuery(20)
       );

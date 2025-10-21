@@ -105,7 +105,8 @@ const BalanceBadge = () => {
 
   if (!currentUser) return null;
 
-  const balance = userProfile?.betaBalance || 0;
+  const balance = userProfile?.betaBalance;
+  const isLoadingBalance = balance === undefined || balance === null;
 
   return (
     <div className="relative" ref={panelRef}>
@@ -114,7 +115,11 @@ const BalanceBadge = () => {
         onClick={() => setIsPanelOpen(!isPanelOpen)}
       >
         <span className="text-yellow-400 text-sm">🪙</span>
-        <span className="text-white font-medium text-sm">{balance.toLocaleString()}</span>
+        {isLoadingBalance ? (
+          <div className="w-12 h-4 bg-gray-600 animate-pulse rounded"></div>
+        ) : (
+          <span className="text-white font-medium text-sm">{balance.toLocaleString()}</span>
+        )}
         <button
           className={`p-1 rounded-full transition-colors ${
             isEligible 

@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { httpsCallable } from 'firebase/functions';
-import { functions } from '../firebase';
+import { doc, setDoc, serverTimestamp, collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
 import toast from 'react-hot-toast';
 
 const CreateChallenge = () => {
   const { currentUser, userProfile } = useAuth();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [templates, setTemplates] = useState([]);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -15,10 +18,10 @@ const CreateChallenge = () => {
     wagerAmount: '',
     proofRequirements: '',
     timeframe: 7, // days
-    category: 'gaming'
+    category: 'gaming',
+    rules: '',
+    templateId: null
   });
-  
-  const [loading, setLoading] = useState(false);
 
   const gameOptions = [
     'League of Legends',
@@ -31,6 +34,38 @@ const CreateChallenge = () => {
     'Chess',
     'Other'
   ];
+
+  // Load templates on component mount
+  useEffect(() => {
+    const loadTemplates = async () => {
+      try {
+        const templatesSnapshot = await getDocs(collection(db, 'challengeTemplates'));
+        const templatesData = templatesSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setTemplates(templatesData);
+      } catch (error) {
+        console.error('Error loading templates:', error);
+      }
+    };
+
+    loadTemplates();
+  }, []);
+
+  const handleUseTemplate = (template) => {
+    setFormData(prev => ({
+      ...prev,
+      title: template.title,
+      description: template.description,
+      category: template.category,
+      rules: template.rules || '',
+      proofRequirements: template.proofRequirements || '',
+      templateId: template.id
+    }));
+    setShowTemplateModal(false);
+    toast.success('Template loaded! You can edit the details as needed.');
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -66,16 +101,7 @@ const CreateChallenge = () => {
       errors.push('Rules must be detailed (minimum 30 characters) to clearly define the skill being tested.');
     }
     
-    // Check for clear skill keywords
-    const skillKeywords = [
-      'skill', 'ability', 'performance', 'achieve', 'demonstrate', 'complete',
-      'master', 'practice', 'learn', 'improve', 'technique', 'strategy'
-    ];
-    
-    const hasSkillKeyword = skillKeywords.some(keyword => textToCheck.includes(keyword));
-    if (!hasSkillKeyword) {
-      errors.push('Challenge should clearly demonstrate skill. Consider including words like "skill", "ability", "performance", or "demonstrate".');
-    }
+    // Note: Removed keyword requirement - challenges can be skill-based without specific words
     
     return errors;
   };
@@ -109,26 +135,52 @@ const CreateChallenge = () => {
     try {
       setLoading(true);
 
-      // Call Cloud Function to create wager
-      const createWager = httpsCallable(functions, 'createWager');
-      const result = await createWager({
+      // Create challenge document with pending status
+      const challengeId = `challenge_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const challengeRef = doc(db, 'challenges', challengeId);
+      
+      const challengeData = {
+        id: challengeId,
         title: formData.title,
         description: formData.description,
-        wagerAmount: wagerAmount,
-        category: formData.category,
+        category: formData.category || 'Other',
+        rules: formData.rules,
         proofRequirements: formData.proofRequirements,
-        timeframe: formData.timeframe
-      });
+        timeframe: parseInt(formData.timeframe) || 7,
+        wagerAmount: wagerAmount,
+        createdBy: currentUser.uid,
+        createdByDisplayName: userProfile?.displayName || 'Anonymous',
+        createdAt: serverTimestamp(),
+        status: 'pending', // Pending review
+        reviewNotes: null,
+        templateId: formData.templateId || null,
+        // Don't escrow funds yet - only when approved and matched
+        participants: [],
+        maxParticipants: 2
+      };
+
+      await setDoc(challengeRef, challengeData);
       
-      if (result.data.success) {
-        toast.success(`Challenge created! ${wagerAmount} coins escrowed.`);
-        navigate(`/challenge/${result.data.challengeId}`);
-      } else {
-        throw new Error(result.data.message || 'Failed to create challenge');
-      }
+      toast.success('Challenge submitted for review! You will be notified when it\'s approved.', { duration: 5000 });
+      navigate('/marketplace');
+      
     } catch (error) {
       console.error('Error creating challenge:', error);
-      toast.error(error.message || 'Failed to create challenge');
+      
+      // Provide specific error messages instead of generic "internal error"
+      let errorMessage = 'Unable to save challenge. Please try again.';
+      
+      if (error.code === 'permission-denied') {
+        errorMessage = 'You don\'t have permission to create challenges.';
+      } else if (error.code === 'unavailable') {
+        errorMessage = 'Service temporarily unavailable. Please try again later.';
+      } else if (error.message) {
+        // Log the full error for developers but show a user-friendly message
+        console.error('Full error details:', error);
+        errorMessage = 'Unable to save challenge. Please check your connection and try again.';
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -176,6 +228,22 @@ const CreateChallenge = () => {
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Use Template Button */}
+            {templates.length > 0 && (
+              <div className="mb-4">
+                <button
+                  type="button"
+                  onClick={() => setShowTemplateModal(true)}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Use Template
+                </button>
+              </div>
+            )}
+            
             <div>
               <label className="block text-sm font-medium text-white mb-2">
                 Challenge Title
@@ -289,6 +357,43 @@ const CreateChallenge = () => {
             </button>
           </form>
         </div>
+        
+        {/* Template Modal */}
+        {showTemplateModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-gray-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-96 overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold text-white">Choose a Template</h3>
+                <button
+                  onClick={() => setShowTemplateModal(false)}
+                  className="text-gray-400 hover:text-white"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="space-y-3">
+                {templates.map((template) => (
+                  <div
+                    key={template.id}
+                    className="border border-gray-600 rounded-lg p-4 hover:border-purple-500 cursor-pointer transition-colors"
+                    onClick={() => handleUseTemplate(template)}
+                  >
+                    <h4 className="font-semibold text-white">{template.title}</h4>
+                    <p className="text-sm text-gray-300 mt-1">{template.description}</p>
+                    <p className="text-xs text-gray-400 mt-2">Category: {template.category}</p>
+                  </div>
+                ))}
+              </div>
+              
+              {templates.length === 0 && (
+                <p className="text-gray-400 text-center py-8">No templates available yet.</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

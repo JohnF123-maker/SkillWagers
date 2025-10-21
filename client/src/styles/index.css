@@ -367,3 +367,39 @@
     }
   }
 }
+
+/* --- Fix checkboxes inheriting text input styles --- */
+input[type="checkbox"] {
+  width: 16px !important;
+  height: 16px !important;
+  display: inline-block !important;
+  vertical-align: top;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: initial;
+  box-shadow: none !important;
+  outline: none;
+  accent-color: #6f4cff; /* brand purple */
+}
+
+/* Compact row for the checkbox + text */
+.checkbox-row {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* keep the text tight and not full-width */
+.checkbox-row .terms-text {
+  line-height: 1.25rem;
+  font-size: 0.875rem;
+  color: #fff;
+  max-width: 44ch;
+}
+
+/* Prevent purple outline inherited from focus-within parent */
+.checkbox-row:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
+}

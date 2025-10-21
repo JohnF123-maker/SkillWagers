@@ -29,6 +29,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import ResponsibleGamingPolicy from './pages/ResponsibleGamingPolicy';
 import TermsOfUse from './pages/TermsOfUse';
 import Contact from './pages/Contact';
+import AdminReview from './pages/AdminReview';
 
 function App() {
   return (
@@ -113,6 +114,14 @@ function App() {
                 element={
                   <AuthGuard adminOnly>
                     <AdminPanel />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin/review" 
+                element={
+                  <AuthGuard adminOnly>
+                    <AdminReview />
                   </AuthGuard>
                 } 
               />

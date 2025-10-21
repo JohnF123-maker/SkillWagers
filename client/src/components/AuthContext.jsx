@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { 
   onAuthStateChanged, 
   signInWithEmailAndPassword, 
@@ -15,7 +15,8 @@ import {
   updateDoc, 
   serverTimestamp,
   increment,
-  runTransaction
+  runTransaction,
+  onSnapshot
 } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { logSigninLocation } from '../utils/locationLogger';
@@ -35,6 +36,7 @@ export const AuthProvider = ({ children }) => {
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(null);
+  const unsubscribeProfileRef = useRef(null);
 
   // Create or update user document in Firestore
   const createOrUpdateUserDoc = async (user, additionalData = {}) => {
@@ -98,13 +100,35 @@ export const AuthProvider = ({ children }) => {
   // Auth state listener
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      // Clean up previous profile listener
+      if (unsubscribeProfileRef.current) {
+        unsubscribeProfileRef.current();
+        unsubscribeProfileRef.current = null;
+      }
+      
       setCurrentUser(user);
       
       if (user) {
         try {
           // Create or update user document
-          const userProfile = await createOrUpdateUserDoc(user);
-          setUserProfile(userProfile);
+          await createOrUpdateUserDoc(user);
+          
+          // Set up real-time listener for user profile
+          const userRef = doc(db, 'users', user.uid);
+          const profileUnsubscriber = onSnapshot(userRef, (doc) => {
+            if (doc.exists()) {
+              setUserProfile(doc.data());
+            } else {
+              setUserProfile(null);
+            }
+          }, (error) => {
+            console.error('Error listening to user profile:', error);
+            // Fallback to one-time fetch
+            fetchUserProfile(user.uid).then(setUserProfile);
+          });
+          
+          unsubscribeProfileRef.current = profileUnsubscriber;
+          
         } catch (error) {
           console.error('Error handling user auth state:', error);
           // Try to fetch existing profile as fallback
@@ -118,7 +142,14 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+      // Clean up profile listener on auth change
+      if (unsubscribeProfileRef.current) {
+        unsubscribeProfileRef.current();
+        unsubscribeProfileRef.current = null;
+      }
+    };
   }, []);
 
   const login = async (email, password) => {
